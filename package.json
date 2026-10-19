@@ -11,7 +11,12 @@
     "preview": "astro preview"
   },
   "dependencies": {
+    "@astrojs/react": "^7.1.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
     "astro": "^7.4.1",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
     "yaml": "^2.9.1"
   }
 }

@@ -14,7 +14,8 @@ const profiles = store.list();
     </p>
     <div class="cta">
       <a class="btn" href="#stages">See the stages ↓</a>
-      <span class="btn ghost" title="Registration is on the roadmap">Claim your handle — soon</span>
+      <a class="btn ghost" href="/edit?new">Build yours in the editor →</a>
+      <span class="btn ghost off" title="Registration is on the roadmap">Claim your handle — soon</span>
     </div>
   </header>
 
@@ -57,7 +58,8 @@ const profiles = store.list();
     font-family: var(--mono); text-transform: uppercase; font-size: 14px; letter-spacing: .05em;
     padding: 16px 24px; background: var(--accent); color: var(--accent-ink); text-decoration: none;
   }
-  .btn.ghost { background: transparent; color: var(--muted); border: 1px solid var(--line); cursor: not-allowed; }
+  .btn.ghost { background: transparent; color: var(--fg); border: 1px solid var(--line); }
+  .btn.ghost.off { color: var(--muted); cursor: not-allowed; }
   .stages { list-style: none; }
   .stages a {
     display: grid; grid-template-columns: 1fr auto; gap: 6px 24px; padding: 5vh 0;
