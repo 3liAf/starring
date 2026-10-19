@@ -1,4 +1,5 @@
 import { totals, heatmap, type Profile, type Visibility } from '../lib/model';
+import { link } from '../lib/url';
 import './story.css';
 
 const VIS_LABEL: Record<Visibility, string> = { public: 'Open source', private: 'Private repo', nda: 'Under NDA' };
@@ -29,6 +30,8 @@ export default function ProfileStory({ p, preview = false, onSection }: Props) {
   const experience = p.experience ?? [];
   const skills = Object.entries(p.skills ?? {}).filter(([, v]) => v?.length);
   const links = Object.entries(me.links ?? {}).filter(([, v]) => v);
+  const platforms = (p.platforms ?? []).filter((pl) => pl.name);
+  const hasActivity = !!latest && latest.public + latest.private > 0;
 
   const sec = (id: string) => ({
     'data-section': id,
@@ -47,7 +50,7 @@ export default function ProfileStory({ p, preview = false, onSection }: Props) {
     <div className={`story${preview ? ' is-preview' : ''}`} data-theme={p.theme ?? 'acid'}>
       <header className="hero" {...sec('profile')}>
         <div className="hero-top mono">
-          <a href="/">Showtime</a>
+          <a href={link()}>Showtime</a>
           <span>{me.location}</span>
           {me.available && <span className="tag solid">Available for work</span>}
         </div>
@@ -63,7 +66,7 @@ export default function ProfileStory({ p, preview = false, onSection }: Props) {
       </header>
 
       {t.all > 0 && (
-        <section className="act" {...sec('contributions')}>
+        <section className="act" id="numbers" {...sec('contributions')}>
           <Label>By the numbers</Label>
           <div className="stats">
             {[[t.years, 'years shipping'], [t.all, 'commits'], [t.clients, 'clients'], [t.repos, 'repositories']].map(([v, l]) => (
@@ -82,7 +85,7 @@ export default function ProfileStory({ p, preview = false, onSection }: Props) {
       )}
 
       {clients.length > 0 && (
-        <section className="act act-clients" {...sec('clients')}>
+        <section className="act act-clients" id="clients" {...sec('clients')}>
           <Label>Who trusted me with production</Label>
           <div className="marquee" aria-hidden="true">
             <div className="marquee-track display">
@@ -102,7 +105,7 @@ export default function ProfileStory({ p, preview = false, onSection }: Props) {
       )}
 
       {experience.length > 0 && (
-        <section className="act" {...sec('experience')}>
+        <section className="act" id="timeline" {...sec('experience')}>
           <Label>The road</Label>
           <ol className="timeline">
             {experience.map((e, i) => (
@@ -121,7 +124,7 @@ export default function ProfileStory({ p, preview = false, onSection }: Props) {
       )}
 
       {projects.length > 0 && (
-        <section className="act" {...sec('projects')}>
+        <section className="act" id="work" {...sec('projects')}>
           <Label>Featured work</Label>
           <div className="projects">
             {projects.map((pr, i) => (
@@ -148,32 +151,36 @@ export default function ProfileStory({ p, preview = false, onSection }: Props) {
         </section>
       )}
 
-      {latest && latest.public + latest.private > 0 && (
-        <section className="act" {...sec('contributions')}>
-          <Label>Every commit counts</Label>
-          <h2 className="display big">{latest.year}<span className="muted"> / {n(latest.public + latest.private)} contributions</span></h2>
-          <div className="heat reveal" role="img" aria-label={`Contribution heatmap for ${latest.year}`}>
-            {grid.map((v, i) => <i className={`l${v}`} key={i} />)}
-          </div>
-          <div className="years">
-            {contributions.map((c) => (
-              <div className="yr reveal" key={c.year}>
-                <span className="mono">{c.year}</span>
-                <div className="yr-bar">
-                  <span className="pub" style={{ width: `${(c.public / maxYear) * 100}%` }} />
-                  <span className="priv" style={{ width: `${(c.private / maxYear) * 100}%` }} />
-                </div>
-                <span className="mono muted">{c.verified ? '✓ imported' : 'self-reported'}</span>
+      {(hasActivity || platforms.length > 0) && (
+        <section className="act" id="activity" {...sec(hasActivity ? 'contributions' : 'platforms')}>
+          <Label>{hasActivity ? 'Every commit counts' : 'Where the code lives'}</Label>
+          {hasActivity && latest && (
+            <>
+              <h2 className="display big">{latest.year}<span className="muted"> / {n(latest.public + latest.private)} contributions</span></h2>
+              <div className="heat reveal" role="img" aria-label={`Contribution heatmap for ${latest.year}`}>
+                {grid.map((v, i) => <i className={`l${v}`} key={i} />)}
               </div>
-            ))}
-          </div>
-          {(p.platforms?.length ?? 0) > 0 && (
+              <div className="years">
+                {contributions.map((c) => (
+                  <div className="yr reveal" key={c.year}>
+                    <span className="mono">{c.year}</span>
+                    <div className="yr-bar">
+                      <span className="pub" style={{ width: `${(c.public / maxYear) * 100}%` }} />
+                      <span className="priv" style={{ width: `${(c.private / maxYear) * 100}%` }} />
+                    </div>
+                    <span className="mono muted">{c.verified ? '✓ imported' : 'self-reported'}</span>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+          {platforms.length > 0 && (
             <ul className="platforms" {...sec('platforms')}>
-              {p.platforms!.map((pl, i) => (
+              {platforms.map((pl, i) => (
                 <li className="reveal" key={i}>
-                  <span className="display">{n(pl.commits)}</span>
+                  <span className="display">{n(pl.commits || pl.repos)}</span>
                   <span className="mono">{pl.name}</span>
-                  <span className="mono muted">{pl.repos} repos · {pl.kind}</span>
+                  <span className="mono muted">{pl.commits ? `${pl.repos} repos · ` : 'repositories · '}{pl.kind}</span>
                 </li>
               ))}
             </ul>
@@ -182,7 +189,7 @@ export default function ProfileStory({ p, preview = false, onSection }: Props) {
       )}
 
       {((p.education?.length ?? 0) > 0 || skills.length > 0) && (
-        <section className="act" {...sec('education')}>
+        <section className="act" id="training" {...sec('education')}>
           <Label>Training montage</Label>
           <div className="edu-skills">
             <ul className="edu">
@@ -206,7 +213,7 @@ export default function ProfileStory({ p, preview = false, onSection }: Props) {
         </section>
       )}
 
-      <footer className="credits" {...sec('profile')}>
+      <footer className="credits" id="credits" {...sec('profile')}>
         <p className="mono muted">That's a wrap</p>
         <h2 className="display">Starring<br /><span className="accent">{me.name}</span></h2>
         <ul className="mono">

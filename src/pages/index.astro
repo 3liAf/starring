@@ -1,9 +1,18 @@
 ---
 import Layout from '../components/Layout.astro';
+import ProfileStory from '../story/ProfileStory';
 import { store, totals } from '../lib/profiles';
+import { link } from '../lib/url';
 
 const profiles = store.list();
+// Personal site: one profile in profiles/ → it is the home page.
+const me = store.mode === 'personal' ? profiles[0] : undefined;
 ---
+{me ? (
+<Layout title={`${me.profile.name} — Showtime`} description={me.profile.tagline} theme={me.theme}>
+  <ProfileStory p={me} />
+</Layout>
+) : (
 <Layout title="Showtime" description="Your developer career as a scroll story — including the work GitHub can't show.">
   <header class="landing">
     <p class="mono accent">Open source · v0.1 prototype</p>
@@ -12,10 +21,19 @@ const profiles = store.list();
       Your GitHub shows the tip of the iceberg. Showtime shows the whole career —
       the client work under NDA, the self-hosted GitLab, the school, the stack — as a scroll story.
     </p>
+    <form class="gh-form" action={link('edit')} method="get">
+      <label class="mono" for="gh">Your stage in 30 seconds</label>
+      <div class="gh-row">
+        <span class="mono">github.com/</span>
+        <input id="gh" name="github" placeholder="username" required autocomplete="off" spellcheck="false" pattern="[A-Za-z0-9\-]{1,39}" />
+        <button class="btn" type="submit">Build my draft →</button>
+      </div>
+      <p class="muted small">Reads your public profile and repos. Nothing is stored on a server.</p>
+    </form>
     <div class="cta">
-      <a class="btn" href="#stages">See the stages ↓</a>
-      <a class="btn ghost" href="/edit?new">Build yours in the editor →</a>
-      <span class="btn ghost off" title="Registration is on the roadmap">Claim your handle — soon</span>
+      <a class="btn ghost" href="#stages">See the stages ↓</a>
+      <a class="btn ghost" href={link('edit?new')}>Start blank</a>
+      <a class="btn ghost" href="https://github.com/pipozzz/showtime/generate">Use as GitHub template</a>
     </div>
   </header>
 
@@ -26,7 +44,7 @@ const profiles = store.list();
         const t = totals(p);
         return (
           <li class="reveal" data-theme={p.theme}>
-            <a href={`/${p.handle}`}>
+            <a href={link(p.handle)}>
               <span class="mono muted">/{p.handle}</span>
               <span class="display stage-name">{p.profile.name}</span>
               <span class="mono">{p.profile.role}</span>
@@ -48,12 +66,25 @@ const profiles = store.list();
     </ol>
   </section>
 </Layout>
+)}
 
 <style>
   .landing { min-height: 100svh; padding: 10vh var(--gutter); display: grid; align-content: center; gap: 32px; }
-  .landing h1 { font-size: clamp(96px, 24vw, 400px); }
+  .landing h1 { font-size: clamp(88px, 15vw, 260px); }
   .pitch { font-size: clamp(20px, 2.2vw, 30px); max-width: 38ch; font-weight: 500; }
   .cta { display: flex; gap: 16px; flex-wrap: wrap; }
+  .gh-form { display: grid; gap: 10px; max-width: 720px; }
+  .gh-form label { color: var(--accent); }
+  .gh-row { display: flex; align-items: stretch; border: 2px solid var(--fg); }
+  .gh-row:focus-within { border-color: var(--accent); }
+  .gh-row span { display: flex; align-items: center; padding-left: 16px; color: var(--muted); }
+  .gh-row input { flex: 1; min-width: 0; background: none; border: 0; color: var(--fg); font: 500 clamp(20px, 2.4vw, 28px) var(--body); padding: 14px 4px; outline: none; }
+  .gh-row .btn { border: 0; cursor: pointer; }
+  .small { font-size: 14px; }
+  @media (max-width: 560px) {
+    .gh-row { flex-wrap: wrap; }
+    .gh-row .btn { width: 100%; }
+  }
   .btn {
     font-family: var(--mono); text-transform: uppercase; font-size: 14px; letter-spacing: .05em;
     padding: 16px 24px; background: var(--accent); color: var(--accent-ink); text-decoration: none;

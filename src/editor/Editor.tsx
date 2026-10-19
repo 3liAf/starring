@@ -2,6 +2,9 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ReactElement } 
 import { parse, stringify } from 'yaml';
 import { blankProfile, totals, validate, type Profile } from '../lib/model';
 import ProfileStory from '../story/ProfileStory';
+import { importGithub } from '../lib/importers/github';
+import { link } from '../lib/url';
+import GithubDialog from './GithubDialog';
 import {
   ClientsSection, EducationSection, ExperienceSection, NumbersSection, PlatformsSection,
   ProfileSection, ProjectsSection, SkillsSection, type SectionProps,
@@ -84,10 +87,14 @@ export default function Editor({ samples }: Props) {
     const sample = samples.find((s) => s.handle === from);
     if (sample) return { p: structuredClone(sample), source: `Loaded /${sample.handle}` };
     if (q.has('new')) return { p: blankProfile(), source: 'Blank stage' };
+    let draft: Profile | undefined;
     try {
       const d = localStorage.getItem(DRAFT_KEY);
-      if (d) return { p: normalize(JSON.parse(d)), source: 'Draft restored' };
+      if (d) draft = normalize(JSON.parse(d));
     } catch { /* storage blocked or corrupt draft */ }
+    // GitHub import replaces this after load; keeping the draft makes it undoable
+    if (q.get('github')) return { p: draft ?? blankProfile(), source: `Reading github.com/${q.get('github')}…` };
+    if (draft) return { p: draft, source: 'Draft restored' };
     return { p: samples[0] ? structuredClone(samples[0]) : blankProfile(), source: 'Sample loaded — make it yours' };
   }, [samples]);
 
@@ -98,6 +105,8 @@ export default function Editor({ samples }: Props) {
   const [toast, setToast] = useState<{ msg: string; undo?: boolean; id: number } | null>({ msg: initial.source, id: 0 });
   const [saved, setSaved] = useState<'saved' | 'saving' | 'off'>('saved');
   const [importOpen, setImportOpen] = useState(false);
+  const [gh, setGh] = useState<{ open: boolean; user?: string; error?: string; busy?: boolean }>({ open: false });
+  const [notes, setNotes] = useState<string[]>([]);
   const [menu, setMenu] = useState<'start' | 'ready' | null>(null);
   const [dropping, setDropping] = useState(false);
   const [paneW, setPaneW] = useState(900);
@@ -161,6 +170,25 @@ export default function Editor({ samples }: Props) {
   const up = useCallback((patch: Partial<Profile>) => commit({ ...p, ...patch }, active), [p, commit, active]);
 
   // ---------- import / export ----------
+  const imported = (next: Profile, importNotes: string[], label: string) => {
+    commit(next);
+    setNotes(importNotes);
+    setGh({ open: false });
+    setActive('profile');
+    notify(`${label} — Cmd+Z to undo`, true);
+  };
+
+  // /edit?github=<user>: build the draft straight away
+  useEffect(() => {
+    const user = new URLSearchParams(location.search).get('github');
+    if (!user) return;
+    setGh({ open: false, busy: true });
+    importGithub(user)
+      .then(({ profile, notes: n }) => imported(profile, n, `Imported @${profile.handle} from GitHub`))
+      .catch((e) => setGh({ open: true, user, error: (e as Error).message }));
+    history.replaceState(null, '', location.pathname);
+  }, []);
+
   const load = (raw: string, label: string) => {
     try {
       const next = normalize(parse(raw));
@@ -219,7 +247,7 @@ export default function Editor({ samples }: Props) {
   return (
     <div className={`ed ed-tab-${mobileTab}`} data-theme={p.theme ?? 'acid'}>
       <header className="ed-top">
-        <a href="/" className="ed-logo display">Show<span className="accent">time</span></a>
+        <a href={link()} className="ed-logo display">Show<span className="accent">time</span></a>
         <span className="ed-sep" />
         <div className="ed-menu-wrap">
           <button type="button" className="ed-btn ghost" onClick={() => setMenu(menu === 'start' ? null : 'start')} aria-expanded={menu === 'start'}>
@@ -228,6 +256,7 @@ export default function Editor({ samples }: Props) {
           {menu === 'start' && (
             <div className="ed-menu" onMouseLeave={() => setMenu(null)}>
               <p className="ed-menu-h mono">Start from</p>
+              <button type="button" className="ed-menu-gh" onClick={() => { setGh({ open: true }); setMenu(null); }}>GitHub profile… <span className="muted">instant draft</span></button>
               <button type="button" onClick={() => { commit(blankProfile()); setMenu(null); notify('Blank stage — Cmd+Z to undo', true); }}>Blank stage</button>
               {samples.map((s) => (
                 <button type="button" key={s.handle} onClick={() => { commit(structuredClone(s)); setMenu(null); notify(`Loaded /${s.handle} — Cmd+Z to undo`, true); }}>
@@ -296,7 +325,7 @@ export default function Editor({ samples }: Props) {
         </ol>
         <div className="ed-nav-foot mono">
           {issueCount ? <span className="ed-warn">{issueCount} field{issueCount > 1 ? 's' : ''} need attention</span> : <span className="accent">✓ All valid</span>}
-          <a href={`/${p.handle}`} target="_blank" rel="noreferrer" className="muted">Live page ↗</a>
+          <a href={link(p.handle)} target="_blank" rel="noreferrer" className="muted">Live page ↗</a>
         </div>
       </nav>
 
@@ -305,6 +334,18 @@ export default function Editor({ samples }: Props) {
           <p className="mono accent">Act {section.act}</p>
           <h2 className="display">{section.label}</h2>
         </div>
+        {notes.length > 0 && active === 'profile' && (
+          <aside className="ed-notes">
+            <div className="ed-notes-head">
+              <p className="mono accent">Imported from GitHub — finish the story</p>
+              <button type="button" aria-label="Dismiss" onClick={() => setNotes([])}>✕</button>
+            </div>
+            <ul>
+              {notes.map((n) => <li key={n}>{n}</li>)}
+              <li>GitHub can’t see your client work — add <button type="button" className="ed-link" onClick={() => pick('clients')}>clients</button>, <button type="button" className="ed-link" onClick={() => pick('experience')}>timeline</button> and <button type="button" className="ed-link" onClick={() => pick('projects')}>NDA projects</button>.</li>
+            </ul>
+          </aside>
+        )}
         <Section p={p} up={up} issues={issues} notify={notify} />
         <div className="ed-form-next">
           {SECTIONS.findIndex((s) => s.id === active) < SECTIONS.length - 1 && (
@@ -323,6 +364,8 @@ export default function Editor({ samples }: Props) {
         <p className="ed-preview-cap mono muted">{frameW}px{zoom < 1 ? ` · ${Math.round(zoom * 100)}%` : ''} · click any section to edit it</p>
       </section>
 
+      {gh.open && <GithubDialog current={p} initialUser={gh.user} initialError={gh.error} onDone={imported} onClose={() => setGh({ open: false })} />}
+      {gh.busy && <div className="ed-busy display" role="status">Reading GitHub<span className="accent">…</span></div>}
       {importOpen && (
         <div className="ed-modal" role="dialog" aria-modal="true" aria-label="Import YAML" onClick={(e) => e.target === e.currentTarget && setImportOpen(false)}>
           <form className="ed-modal-box" onSubmit={(e) => { e.preventDefault(); load(new FormData(e.currentTarget).get('yaml') as string, 'Imported'); }}>

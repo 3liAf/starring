@@ -1,84 +1,160 @@
-# Showtime
+<p align="center">
+  <img src="docs/screenshots/hero.png" alt="A Showtime profile: a huge two-tone name, role and tagline on a black stage" width="100%" />
+</p>
 
-Your developer career as a scroll story, including the work GitHub can't show.
+<h1 align="center">Showtime</h1>
 
-Most of a working developer's code lives in private repos: client work, agency GitLab, work under NDA. Showtime puts it on one page next to your public repos, your school and your stack, and the page is designed to stick in people's heads.
+<p align="center">
+  <b>Your developer career as a scroll story, including the work GitHub can't show.</b><br />
+  Open source · one YAML file per person · free on GitHub Pages
+</p>
 
-> Status: v0.1 prototype. Static Astro site, profiles in YAML, sample data only.
+<p align="center">
+  <a href="https://github.com/pipozzz/showtime/generate"><b>Use this template</b></a> ·
+  <a href="#your-own-showtime-site-in-5-minutes">5-minute setup</a> ·
+  <a href="#contributing">Contribute</a>
+</p>
 
-## Run it
+---
+
+Most working developers' best code sits in private repos: client projects, the agency's self-hosted GitLab, work under NDA. Your GitHub profile shows only the small public part.
+
+**Showtime shows the whole career on one page.** It covers the clients you can name, the projects you can't show, your public repos, school and stack, and it's designed so people remember it.
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/act-numbers.png" alt="Act I: years shipping, commits, clients, repositories, and the share of work in private repos" /></td>
+    <td width="50%"><img src="docs/screenshots/act-clients.png" alt="Act II: a moving marquee of client names with NDA and public tags" /></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/act-work.png" alt="Act IV: a featured project under NDA with redaction bars and big impact numbers" /></td>
+    <td><img src="docs/screenshots/act-activity.png" alt="Act V: contribution heatmap and public versus private commits per year" /></td>
+  </tr>
+</table>
+
+## What you get
+
+- **A scroll story in acts.** Hero, the numbers, the client wall, the timeline, featured work, activity, school and skills, and closing credits.
+- **Proper NDA handling.** You name the client and describe the impact. The code, internal links and diagrams appear as redaction bars.
+- **Public and private, side by side.** It shows "73% of this work lives in private repos" and makes that the headline instead of an excuse.
+- **An instant draft from GitHub.** Type a username and get your name, links, top repos, languages and topics in seconds.
+- **A visual editor with a live preview** at desktop, tablet and phone sizes. It has drag and drop, undo, validation and a "stage ready" score.
+- **Your data stays a file.** A profile is one readable YAML file in your repo. There's no account and no lock-in.
+- **Static and fast.** Built with Astro and no client JS on profile pages. It deploys to GitHub Pages with the included workflow.
+
+<p align="center">
+  <img src="docs/screenshots/editor.png" alt="The Showtime editor: section list, form fields and a live preview of the profile" width="100%" />
+</p>
+
+## Your own Showtime site in 5 minutes
+
+1. Click **[Use this template](https://github.com/pipozzz/showtime/generate)** to create your own repo.
+2. Run it locally (`npm install && npm run dev`) and open **`/edit`**.
+3. Choose **Start from → GitHub profile** to get an instant draft. Then add the parts GitHub can't see: clients, NDA projects, your timeline, school.
+4. Press **Export .yaml** (⌘S) and save the file as **`profiles/<your-handle>.yaml`**. With exactly one file in `profiles/`, your profile becomes the home page.
+5. In your repo, open **Settings → Pages → Build and deployment** and set **Source: GitHub Actions**.
+6. Push to `main`. The site goes live at `https://<user>.github.io/<repo>/`. Name the repo `<user>.github.io` to serve it from the root, or add a custom domain.
+
+The Pages workflow reads the correct `site` and `base` from GitHub, so project pages, user pages and custom domains all work without editing config.
+
+## Run it locally
 
 ```bash
 npm install
-npm run dev     # http://localhost:4321
-npm run build   # static output in dist/
+npm run dev     # http://localhost:4321  (editor at /edit)
+npm run build   # static site in dist/
 ```
+
+Requires Node 22.22 or newer.
 
 ## A profile is one YAML file
 
-Copy `profiles/nova.yaml` to `profiles/<your-handle>.yaml` and edit it. Each file becomes a page at `/<handle>`.
+```yaml
+handle: nova
+theme: acid            # acid | blood | ice
+profile:
+  name: Nova Kováč
+  role: Senior Frontend & Platform Engineer
+  tagline: Eleven years shipping pixels for people who print money and stories.
+clients:
+  - { name: Northwind Pictures, sector: Film & TV, nda: true }
+projects:
+  - title: Premiere Night Streaming Hub
+    client: Northwind Pictures
+    visibility: nda    # public | private | nda
+    blurb: Global launch platform for a blockbuster franchise.
+    impact: [18M visits launch week, 99.98% uptime]
+```
 
-| Section | What it shows |
+For a full example, see [`examples/nova.yaml`](examples/nova.yaml), which shows every section.
+
+| `profiles/` contains | Home page shows |
 | --- | --- |
-| `profile` | Name, role, tagline, links, "available for work" flag |
-| `contributions` | Public and private commits per year; `verified: true` means the counts came from an importer |
-| `platforms` | GitHub, GitLab (also self-hosted), Bitbucket: repo and commit totals |
-| `clients` | Client wall; `nda: true` marks client names you're allowed to say but whose work you can't show |
-| `experience` | Timeline of roles, linked to clients and stack |
-| `projects` | Featured work with `visibility: public \| private \| nda`; NDA projects get redacted bars instead of links |
-| `education`, `skills` | CV section |
-
-Themes: `acid`, `blood`, `ice`.
+| nothing | demo: the samples from `examples/` |
+| one file | that profile, so the repo works as a personal site |
+| several files | a directory of all profiles, each at `/<handle>` |
 
 ## Visual editor
 
-You can build a profile without touching YAML at `/edit`. Start from `/edit?new` for a blank profile, or from `/edit?from=nova` to begin with an existing one.
+Open `/edit`, `/edit?new` for a blank profile, `/edit?from=<handle>` to edit an existing one, or `/edit?github=<username>` to start from GitHub.
 
-- The live preview uses the same `ProfileStory` component as the published page, so the preview matches what ships. You can preview it at desktop, tablet or phone width; the layout uses container queries, so the phone view really reflows.
-- Click a section in the preview to jump to its form. Picking a section in the sidebar scrolls the preview to it.
-- Cards can be reordered by dragging or with ↑/↓ buttons, duplicated, or deleted (deleting shows an undo toast). Tags (stack, impact, clients) suggest the clients you've already added.
-- Validation runs as you type, with a badge per section. A "Stage ready" score lists what's still missing.
-- Undo and redo use ⌘Z / ⇧⌘Z, and typing is merged into one undo step. Drafts autosave in the browser.
-- To import, paste YAML, pick a file, or drop a `.yaml` file anywhere on the editor. To export, press ⌘S, which downloads `<handle>.yaml` for `profiles/`.
+- **Live preview.** The preview renders the same `ProfileStory` component as the published page. The layout uses container queries, so the phone view really reflows. Click any section in the preview to jump to its form.
+- **Editing.** Cards can be dragged to reorder, duplicated, or deleted, and deletes can be undone. Tag inputs suggest clients you've already added. Picking an NDA client switches the project to NDA.
+- **Validation and readiness.** Errors appear as you type, with a badge per section. A "Stage ready" checklist shows what's still missing.
+- **Undo, import and export.** ⌘Z / ⇧⌘Z undo and redo, and drafts autosave in your browser. You can paste, pick or drop YAML/JSON to import. ⌘S exports `<handle>.yaml`.
 
-Today the editor runs entirely in the browser. When registration lands, autosave will go to the database instead of `localStorage`.
+## Importers
 
-## Architecture: one person or many
+**GitHub** ([`src/lib/importers/github.ts`](src/lib/importers/github.ts)) runs in the browser or in Node. It talks only to `api.github.com`.
+- It imports your profile, links, your top 4 own repos as featured projects (stars and forks become impact numbers), and your languages and topics as skills.
+- With an optional `read:user` token, it also imports exact contributions per year, including the private count GitHub reports when *Include private contributions* is on. The token is never stored.
+- **Merge into current** refreshes GitHub data and keeps your clients, timeline and NDA work.
 
-The page code only uses the `ProfileStore` interface in `src/lib/profiles.ts`, so it doesn't care where a profile is stored.
+**Planned:**
+- GitLab, including self-hosted, Bitbucket and Gitea.
+- JSON Resume.
+- `npx showtime scan ~/work`, a local CLI that counts *your* commits in private repos and keeps only dates and counts. Code, messages and repo names never leave your machine.
+
+## Roadmap
+
+- [x] Scroll story with acts, NDA redaction and public/private split
+- [x] Visual editor with live, responsive preview
+- [x] Instant draft from GitHub
+- [x] GitHub Pages template workflow
+- [ ] Theme plugins (`themes/<name>`) and a theme gallery
+- [ ] Movie-poster Open Graph image per profile
+- [ ] GitLab / Bitbucket / Gitea importers
+- [ ] Local `showtime scan` CLI for private repos
+- [ ] Hosted mode: sign in with GitHub or GitLab, claim a handle, save to Postgres
+
+### Architecture
+
+The pages read profiles only through a `ProfileStore` interface (`src/lib/profiles.ts`). Today the store reads YAML files. Hosted mode will put the same JSON document in a database, so the pages and the editor won't change.
 
 ```
-            ┌──────────────┐
-YAML files ─┤              │
-            │ ProfileStore │──► /[handle] scroll story
-Postgres  ──┤  list / get  │──► / landing + directory
-(later)     └──────────────┘
+YAML files ─┐   ┌──────────────┐   ┌─► /<handle>   scroll story (static HTML)
+            ├──►│ ProfileStore │───┤
+Postgres  ──┘   └──────────────┘   └─► /            home: demo · personal · directory
+(planned)            ▲
+                     │ same Profile model (src/lib/model.ts)
+                /edit visual editor ── importers (GitHub, …)
 ```
 
-Two ways to run it, from one codebase:
+## Contributing
 
-1. **Self-hosted, single user** (works today). Fork it, write one YAML file, deploy the static build to GitHub Pages, Netlify or Cloudflare.
-2. **Hosted, multi-user** (roadmap). People register, claim a handle and edit their profile in the browser.
+Contributions of every size are welcome. Good places to start:
 
-### Roadmap for multi-user
+- **A theme.** Pick a colour palette and type for the stage. This is the easiest first PR.
+- **An importer**, for GitLab, Bitbucket, Gitea or JSON Resume. Each one is a small, self-contained module.
+- **Translations** of the story labels.
+- **Bug reports with a profile YAML** that renders wrong.
 
-- Astro in hybrid mode: profile pages are pre-rendered or cached, the editor and API render on the server.
-- Sign in with GitHub or GitLab OAuth (including self-hosted GitLab). The same token powers the public-repo importer. Candidate auth library: Better Auth.
-- Postgres tables: `users`, `profiles` (a JSONB document validated against the same schema as the YAML), `handles` (unique, with a reserved-word list), `imports`.
-- YAML import and export, so a self-hosted profile can move to the hosted service and back.
-- Profile editor with a live preview.
-- Moderation: reports, rate limits on handle claims, and checks that block impersonation of company names.
-
-### Importers (planned)
-
-- **Public:** GitHub GraphQL and GitLab API for repos, languages and the contribution calendar.
-- **Private (local CLI):** `npx showtime scan ~/work --email you@company.com` reads `git log` on your own machine and uploads only daily counts and dates. Code, messages and repo names stay on your machine unless you opt in.
-- **Proof (idea):** a signed digest of commit hashes, so a former employer could confirm "these commits exist" without revealing them.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for setup and conventions. Issues labelled `good first issue` are a good starting point.
 
 ## A note on client names
 
-Saying you worked on a project for a company is usually fine. Using its logo or describing the internals can break an NDA or trademark rules. Showtime displays client names as text by default, and the `nda` flag hides links and details. Check your contracts.
+Saying you worked on a project for a company is usually fine. Showing its logo or describing internals can breach an NDA or trademark rules. Showtime renders client names as text only, and the `nda` flag removes links and details. Check your contracts.
 
 ## License
 
-MIT
+[MIT](LICENSE)

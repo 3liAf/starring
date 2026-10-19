@@ -56,6 +56,8 @@ export const THEMES: { id: Theme; accent: string; label: string }[] = [
 ];
 
 export const HANDLE = /^[a-z0-9][a-z0-9-]{1,38}$/;
+/** Handles that would collide with app routes. */
+export const RESERVED = ['edit', 'api', 'login', 'logout', 'settings', 'examples', 'profiles', 'assets', 'admin', 'new'];
 export const THIS_YEAR = new Date().getFullYear();
 
 export const blankProfile = (): Profile => ({
@@ -82,6 +84,7 @@ export const validate = (p: Profile): Issues => {
     if (v === undefined || v === null || (typeof v === 'string' && !v.trim())) out[path] = 'Required';
   };
   if (!HANDLE.test(p.handle ?? '')) out.handle = 'Lowercase letters, digits and dashes, 2–39 chars';
+  else if (RESERVED.includes(p.handle)) out.handle = 'This handle is reserved';
   req('profile.name', p.profile?.name);
   req('profile.role', p.profile?.role);
   Object.entries(p.profile?.links ?? {}).forEach(([k, v]) => {
