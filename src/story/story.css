@@ -32,7 +32,7 @@
 
 .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); }
 .stat { background: var(--bg); padding: 32px 24px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
-.stat b { font-size: clamp(48px, 8cqi, 128px); font-weight: 400; }
+.stat b { font-size: clamp(44px, 6cqi, 112px); font-weight: 400; overflow-wrap: anywhere; }
 .iceberg { margin: 12vh 0 32px; font-size: clamp(22px, 3cqi, 40px); max-width: 22ch; font-weight: 500; }
 .iceberg .display { font-size: 2.6em; display: block; }
 .split { display: flex; height: 72px; border: 1px solid var(--line); }

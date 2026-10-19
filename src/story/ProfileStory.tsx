@@ -66,7 +66,7 @@ export default function ProfileStory({ p, preview = false, onSection }: Props) {
       </header>
 
       {t.all > 0 && (
-        <section className="act" {...sec('contributions')}>
+        <section className="act" id="numbers" {...sec('contributions')}>
           <Label>By the numbers</Label>
           <div className="stats">
             {[[t.years, 'years shipping'], [t.all, 'commits'], [t.clients, 'clients'], [t.repos, 'repositories']].map(([v, l]) => (
@@ -85,7 +85,7 @@ export default function ProfileStory({ p, preview = false, onSection }: Props) {
       )}
 
       {clients.length > 0 && (
-        <section className="act act-clients" {...sec('clients')}>
+        <section className="act act-clients" id="clients" {...sec('clients')}>
           <Label>Who trusted me with production</Label>
           <div className="marquee" aria-hidden="true">
             <div className="marquee-track display">
@@ -105,7 +105,7 @@ export default function ProfileStory({ p, preview = false, onSection }: Props) {
       )}
 
       {experience.length > 0 && (
-        <section className="act" {...sec('experience')}>
+        <section className="act" id="timeline" {...sec('experience')}>
           <Label>The road</Label>
           <ol className="timeline">
             {experience.map((e, i) => (
@@ -124,7 +124,7 @@ export default function ProfileStory({ p, preview = false, onSection }: Props) {
       )}
 
       {projects.length > 0 && (
-        <section className="act" {...sec('projects')}>
+        <section className="act" id="work" {...sec('projects')}>
           <Label>Featured work</Label>
           <div className="projects">
             {projects.map((pr, i) => (
@@ -152,7 +152,7 @@ export default function ProfileStory({ p, preview = false, onSection }: Props) {
       )}
 
       {(hasActivity || platforms.length > 0) && (
-        <section className="act" {...sec(hasActivity ? 'contributions' : 'platforms')}>
+        <section className="act" id="activity" {...sec(hasActivity ? 'contributions' : 'platforms')}>
           <Label>{hasActivity ? 'Every commit counts' : 'Where the code lives'}</Label>
           {hasActivity && latest && (
             <>
@@ -189,7 +189,7 @@ export default function ProfileStory({ p, preview = false, onSection }: Props) {
       )}
 
       {((p.education?.length ?? 0) > 0 || skills.length > 0) && (
-        <section className="act" {...sec('education')}>
+        <section className="act" id="training" {...sec('education')}>
           <Label>Training montage</Label>
           <div className="edu-skills">
             <ul className="edu">
@@ -213,7 +213,7 @@ export default function ProfileStory({ p, preview = false, onSection }: Props) {
         </section>
       )}
 
-      <footer className="credits" {...sec('profile')}>
+      <footer className="credits" id="credits" {...sec('profile')}>
         <p className="mono muted">That's a wrap</p>
         <h2 className="display">Starring<br /><span className="accent">{me.name}</span></h2>
         <ul className="mono">
