@@ -1,0 +1,17 @@
+{
+  "name": "showtime",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Your developer career as a scroll story. Public repos, private client work, CV — one YAML file.",
+  "license": "MIT",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "astro": "^7.4.1",
+    "yaml": "^2.9.1"
+  }
+}

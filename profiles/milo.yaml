@@ -1,0 +1,69 @@
+handle: milo
+theme: blood
+
+profile:
+  name: Milo Ferreira
+  role: Backend & Data Engineer
+  location: Lisbon, PT
+  tagline: I make databases go brrr for companies you've heard of.
+  available: false
+  links:
+    github: https://github.com/example
+    email: mailto:milo@example.com
+
+contributions:
+  - { year: 2021, public: 90, private: 2210, verified: true }
+  - { year: 2022, public: 140, private: 2480, verified: true }
+  - { year: 2023, public: 220, private: 2390, verified: true }
+  - { year: 2024, public: 310, private: 2020, verified: false }
+  - { year: 2025, public: 260, private: 1900, verified: false }
+
+platforms:
+  - { name: GitHub, kind: public, repos: 21, commits: 1020 }
+  - { name: GitLab (company), kind: private, repos: 54, commits: 11000 }
+
+clients:
+  - { name: Tidewater Logistics, sector: Logistics, nda: true }
+  - { name: Sunset Grocers, sector: Retail, nda: false }
+  - { name: Meridian Health, sector: Healthcare, nda: true }
+
+experience:
+  - company: Tidewater Logistics
+    role: Staff Data Engineer
+    from: 2022
+    to: null
+    summary: Real-time fleet telemetry pipelines, 3B events per day.
+    clients: [Tidewater Logistics]
+    stack: [Go, Kafka, ClickHouse]
+  - company: Datapress Consulting
+    role: Backend Engineer
+    from: 2021
+    to: 2022
+    summary: Migrations and reporting for retail and health clients.
+    clients: [Sunset Grocers, Meridian Health]
+    stack: [Python, Postgres, dbt]
+
+projects:
+  - title: Fleet Pulse
+    client: Tidewater Logistics
+    year: 2023
+    visibility: nda
+    role: Architect
+    blurb: Streaming telemetry platform replacing a nightly batch system.
+    impact: [3B events/day, 12s end-to-end latency]
+    stack: [Go, Kafka, ClickHouse]
+  - title: pgshard-kit
+    year: 2024
+    visibility: public
+    role: Author
+    blurb: Toolkit for zero-downtime Postgres resharding.
+    impact: [800 stars]
+    stack: [Go, Postgres]
+    url: https://github.com/example/pgshard-kit
+
+education:
+  - { school: Universidade de Lisboa, degree: BSc Computer Science, from: 2016, to: 2020 }
+
+skills:
+  Backend: [Go, Python, gRPC]
+  Data: [Kafka, ClickHouse, Postgres, dbt]

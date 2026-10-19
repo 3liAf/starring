@@ -1,0 +1,74 @@
+---
+import Layout from '../components/Layout.astro';
+import { store, totals } from '../lib/profiles';
+
+const profiles = store.list();
+---
+<Layout title="Showtime" description="Your developer career as a scroll story — including the work GitHub can't show.">
+  <header class="landing">
+    <p class="mono accent">Open source · v0.1 prototype</p>
+    <h1 class="display">Show<br />time<span class="accent">.</span></h1>
+    <p class="pitch">
+      Your GitHub shows the tip of the iceberg. Showtime shows the whole career —
+      the client work under NDA, the self-hosted GitLab, the school, the stack — as a scroll story.
+    </p>
+    <div class="cta">
+      <a class="btn" href="#stages">See the stages ↓</a>
+      <span class="btn ghost" title="Registration is on the roadmap">Claim your handle — soon</span>
+    </div>
+  </header>
+
+  <section class="act" id="stages">
+    <div class="act-label mono"><span class="num">Now playing</span><span>{profiles.length} stages</span></div>
+    <ul class="stages">
+      {profiles.map((p) => {
+        const t = totals(p);
+        return (
+          <li class="reveal" data-theme={p.theme}>
+            <a href={`/${p.handle}`}>
+              <span class="mono muted">/{p.handle}</span>
+              <span class="display stage-name">{p.profile.name}</span>
+              <span class="mono">{p.profile.role}</span>
+              <span class="mono muted">{t.all.toLocaleString('en')} commits · {t.clients} clients · {t.privateShare}% private</span>
+              <span class="arrow display">→</span>
+            </a>
+          </li>
+        );
+      })}
+    </ul>
+  </section>
+
+  <section class="act how">
+    <div class="act-label mono"><span class="num">How</span><span>Three steps</span></div>
+    <ol>
+      <li class="reveal"><b class="display accent">01</b><p>Write one YAML file — or sign in with GitHub / GitLab and fill the editor.</p></li>
+      <li class="reveal"><b class="display accent">02</b><p>Run the importer on your machine. It counts your commits in private repos — dates only, never code.</p></li>
+      <li class="reveal"><b class="display accent">03</b><p>Get <span class="mono">showtime.dev/you</span>, or self-host the static build anywhere.</p></li>
+    </ol>
+  </section>
+</Layout>
+
+<style>
+  .landing { min-height: 100svh; padding: 10vh var(--gutter); display: grid; align-content: center; gap: 32px; }
+  .landing h1 { font-size: clamp(96px, 24vw, 400px); }
+  .pitch { font-size: clamp(20px, 2.2vw, 30px); max-width: 38ch; font-weight: 500; }
+  .cta { display: flex; gap: 16px; flex-wrap: wrap; }
+  .btn {
+    font-family: var(--mono); text-transform: uppercase; font-size: 14px; letter-spacing: .05em;
+    padding: 16px 24px; background: var(--accent); color: var(--accent-ink); text-decoration: none;
+  }
+  .btn.ghost { background: transparent; color: var(--muted); border: 1px solid var(--line); cursor: not-allowed; }
+  .stages { list-style: none; }
+  .stages a {
+    display: grid; grid-template-columns: 1fr auto; gap: 6px 24px; padding: 5vh 0;
+    border-bottom: 1px solid var(--line); text-decoration: none;
+  }
+  .stages a > * { grid-column: 1; }
+  .stage-name { font-size: clamp(48px, 9vw, 140px); transition: color .25s; }
+  .stages a:hover .stage-name { color: var(--accent); }
+  .arrow { grid-column: 2 !important; grid-row: 1 / span 4; align-self: center; font-size: clamp(48px, 8vw, 120px); color: var(--accent); transition: transform .25s; }
+  .stages a:hover .arrow { transform: translateX(12px); }
+  .how ol { list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 40px; }
+  .how b { font-size: 96px; display: block; }
+  .how p { font-size: 20px; max-width: 30ch; }
+</style>

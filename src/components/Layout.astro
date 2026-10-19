@@ -1,0 +1,61 @@
+---
+import '../styles/global.css';
+
+interface Props { title: string; description?: string; theme?: string }
+const { title, description = 'Developer careers as scroll stories.', theme = 'acid' } = Astro.props;
+---
+<!doctype html>
+<html lang="en" data-theme={theme}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Anton&family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="progress" aria-hidden="true"></div>
+    <slot />
+    <script>
+      const bar = document.querySelector<HTMLElement>('.progress');
+      const onScroll = () => {
+        const max = document.documentElement.scrollHeight - innerHeight;
+        if (bar) bar.style.transform = `scaleX(${max > 0 ? scrollY / max : 0})`;
+      };
+      addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+
+      const io = new IntersectionObserver(
+        (entries) => entries.forEach((e) => e.isIntersecting && (e.target.classList.add('in'), io.unobserve(e.target))),
+        { threshold: 0.15 }
+      );
+      document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+
+      // count-up numbers
+      const fmt = new Intl.NumberFormat('en');
+      const counters = new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+          if (!e.isIntersecting) return;
+          const el = e.target as HTMLElement;
+          const to = Number(el.dataset.count);
+          const t0 = performance.now();
+          const tick = (t: number) => {
+            const k = Math.min(1, (t - t0) / 1400);
+            el.textContent = fmt.format(Math.round(to * (1 - (1 - k) ** 4)));
+            if (k < 1) requestAnimationFrame(tick);
+          };
+          requestAnimationFrame(tick);
+          counters.unobserve(el);
+        });
+      }, { threshold: 0.6 });
+      document.querySelectorAll('[data-count]').forEach((el) => counters.observe(el));
+    </script>
+  </body>
+</html>

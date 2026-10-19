@@ -1,0 +1,115 @@
+# Showtime profile — one file = one stage.
+# Everything here is sample data. Company names are fictional.
+handle: nova
+theme: acid          # acid | blood | ice
+
+profile:
+  name: Nova Kováč
+  role: Senior Frontend & Platform Engineer
+  location: Bratislava, SK
+  tagline: Eleven years shipping pixels for people who print money and stories.
+  available: true
+  links:
+    github: https://github.com/example
+    gitlab: https://gitlab.com/example
+    linkedin: https://linkedin.com/in/example
+    email: mailto:hello@example.com
+
+# Contributions per year. `public` is what the world can see,
+# `private` is self-reported work in client or company repos.
+# `verified` = imported by a Showtime importer (counts/dates only, no code).
+contributions:
+  - { year: 2019, public: 310, private: 1480, verified: true }
+  - { year: 2020, public: 420, private: 1720, verified: true }
+  - { year: 2021, public: 280, private: 2050, verified: true }
+  - { year: 2022, public: 510, private: 1890, verified: true }
+  - { year: 2023, public: 640, private: 1610, verified: false }
+  - { year: 2024, public: 890, private: 1340, verified: false }
+  - { year: 2025, public: 1120, private: 980, verified: false }
+
+platforms:
+  - { name: GitHub, kind: public, repos: 64, commits: 4170 }
+  - { name: GitLab (self-hosted, agency), kind: private, repos: 38, commits: 7420 }
+  - { name: Bitbucket (client), kind: private, repos: 11, commits: 3650 }
+
+clients:
+  - { name: Northwind Pictures, sector: Film & TV, nda: true }
+  - { name: The Weekly Ledger, sector: Media & Publishing, nda: true }
+  - { name: Halcyon Bank, sector: Fintech, nda: true }
+  - { name: Orbit Mobile, sector: Telco, nda: false }
+  - { name: Pale Fox Games, sector: Gaming, nda: false }
+  - { name: Kestrel Air, sector: Aviation, nda: true }
+
+experience:
+  - company: Indie
+    role: Freelance Platform Engineer
+    from: 2023
+    to: null
+    summary: Design systems and frontend platforms for media brands.
+    clients: [The Weekly Ledger, Orbit Mobile]
+    stack: [Astro, TypeScript, Cloudflare, Postgres]
+  - company: Bright Lantern Agency
+    role: Lead Frontend Engineer
+    from: 2019
+    to: 2023
+    summary: Led a team of 7 that built streaming and editorial platforms for global clients.
+    clients: [Northwind Pictures, The Weekly Ledger, Kestrel Air]
+    stack: [React, Next.js, GraphQL, GitLab CI]
+  - company: Halcyon Bank
+    role: Frontend Engineer
+    from: 2016
+    to: 2019
+    summary: Rebuilt online banking UI used by 1.2M customers.
+    clients: [Halcyon Bank]
+    stack: [Angular, RxJS, Java]
+  - company: Pale Fox Games
+    role: Junior Developer
+    from: 2014
+    to: 2016
+    summary: Tools, launchers and a lot of WebGL.
+    clients: [Pale Fox Games]
+    stack: [JavaScript, three.js, PHP]
+
+projects:
+  - title: Premiere Night Streaming Hub
+    client: Northwind Pictures
+    year: 2021
+    visibility: nda        # public | private | nda
+    role: Frontend lead
+    blurb: Global launch platform for a blockbuster franchise — live premieres, trailers, 40 locales.
+    impact: [18M visits launch week, 99.98% uptime, 40 locales]
+    stack: [Next.js, GraphQL, Akamai]
+  - title: Paywall & Reader Platform
+    client: The Weekly Ledger
+    year: 2022
+    visibility: nda
+    role: Senior engineer
+    blurb: Metered paywall, article renderer and A/B framework for a 180-year-old publication.
+    impact: [+23% conversion, 400ms faster LCP]
+    stack: [React, Edge workers, Kafka]
+  - title: orbit-ui
+    client: Orbit Mobile
+    year: 2024
+    visibility: public
+    role: Author
+    blurb: Open-source design system with 60 components and a token pipeline.
+    impact: [2.1k stars, 90 contributors]
+    stack: [Web Components, Lit, Style Dictionary]
+    url: https://github.com/example/orbit-ui
+  - title: Foxlauncher
+    client: Pale Fox Games
+    year: 2015
+    visibility: private
+    role: Developer
+    blurb: Game launcher and patcher shipped to 600k players.
+    impact: [600k installs]
+    stack: [Electron, Node]
+
+education:
+  - { school: Slovak University of Technology, degree: MSc Applied Informatics, from: 2009, to: 2014 }
+  - { school: Gymnázium Jura Hronca, degree: Mathematics track, from: 2005, to: 2009 }
+
+skills:
+  Frontend: [TypeScript, React, Astro, Web Components, WebGL]
+  Platform: [Node, Edge, GraphQL, Postgres, Kafka]
+  Delivery: [GitLab CI, GitHub Actions, Docker, Kubernetes]
