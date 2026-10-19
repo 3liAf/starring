@@ -1,0 +1,4 @@
+// Internal links that work at a domain root and under a GitHub Pages project path (/repo/).
+const BASE = (import.meta.env.BASE_URL ?? '/').replace(/\/?$/, '/');
+
+export const link = (path = '') => BASE + path.replace(/^\//, '');

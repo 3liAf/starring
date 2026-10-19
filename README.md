@@ -4,9 +4,19 @@ Your developer career as a scroll story, including the work GitHub can't show.
 
 Most of a working developer's code lives in private repos: client work, agency GitLab, work under NDA. Showtime puts it on one page next to your public repos, your school and your stack, and the page is designed to stick in people's heads.
 
-> Status: v0.1 prototype. Static Astro site, profiles in YAML, sample data only.
+> Status: v0.1 prototype. Static Astro site, profiles in YAML, a visual editor, and an instant draft from your GitHub profile.
 
-## Run it
+## Your own Showtime site in 5 minutes
+
+1. Click **[Use this template](https://github.com/pipozzz/showtime/generate)** to create your own repo.
+2. Open the editor (`npm run dev`, then `/edit`). Type your GitHub username to get an instant draft, then add the parts GitHub can't see: clients, NDA projects, your timeline, school.
+3. Press **Export .yaml** and save the file as `profiles/<your-handle>.yaml` in your repo. With exactly one file in `profiles/`, your profile becomes the home page.
+4. In your repo, open **Settings → Pages → Build and deployment** and set **Source: GitHub Actions**.
+5. Push to `main`. The workflow in `.github/workflows/pages.yml` builds the site and publishes it at `https://<user>.github.io/<repo>/`. Name the repo `<user>.github.io` to serve it from the root.
+
+The workflow reads the correct `site` and `base` from GitHub Pages, so project pages, user pages and custom domains all work without editing config.
+
+## Run it locally
 
 ```bash
 npm install
@@ -16,7 +26,13 @@ npm run build   # static output in dist/
 
 ## A profile is one YAML file
 
-Copy `profiles/nova.yaml` to `profiles/<your-handle>.yaml` and edit it. Each file becomes a page at `/<handle>`.
+Each file in `profiles/` becomes a page at `/<handle>`. You can copy `examples/nova.yaml` as a starting point, or export one from the editor.
+
+| `profiles/` contains | Home page shows |
+| --- | --- |
+| nothing | demo: the samples from `examples/` |
+| one file | that profile, so the repo works as a personal site |
+| several files | a directory of all profiles |
 
 | Section | What it shows |
 | --- | --- |
@@ -69,9 +85,13 @@ Two ways to run it, from one codebase:
 - Profile editor with a live preview.
 - Moderation: reports, rate limits on handle claims, and checks that block impersonation of company names.
 
-### Importers (planned)
+### Importers
 
-- **Public:** GitHub GraphQL and GitLab API for repos, languages and the contribution calendar.
+- **GitHub (works today):** enter a username on the home page or in the editor (*Start from → GitHub profile*). The importer reads your public profile and repos in the browser, then fills in name, links, location, "available for work", your top 4 repos as featured projects (stars and forks become impact numbers), and your languages and topics as skills.
+  - With an optional token that has the `read:user` scope, it also imports exact contributions per year, including the private count GitHub reports when "Include private contributions" is turned on. The token is used only for those requests and is never stored.
+  - *Merge into current* refreshes the GitHub data and keeps your clients, timeline and NDA work.
+  - Code: `src/lib/importers/github.ts`, browser and Node 18+.
+- **GitLab and self-hosted GitLab (planned):** same pattern, with an instance URL.
 - **Private (local CLI):** `npx showtime scan ~/work --email you@company.com` reads `git log` on your own machine and uploads only daily counts and dates. Code, messages and repo names stay on your machine unless you opt in.
 - **Proof (idea):** a signed digest of commit hashes, so a former employer could confirm "these commits exist" without revealing them.
 

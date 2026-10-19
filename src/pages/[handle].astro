@@ -2,6 +2,7 @@
 import Layout from '../components/Layout.astro';
 import ProfileStory from '../story/ProfileStory';
 import { store, type Profile } from '../lib/profiles';
+import { link } from '../lib/url';
 
 export function getStaticPaths() {
   return store.list().map((p) => ({ params: { handle: p.handle }, props: { p } }));
@@ -11,7 +12,7 @@ const { p } = Astro.props as { p: Profile };
 ---
 <Layout title={`${p.profile.name} — Showtime`} description={p.profile.tagline} theme={p.theme}>
   <ProfileStory p={p} />
-  <a class="edit-fab mono" href={`/edit?from=${p.handle}`}>Edit in Showtime ✎</a>
+  <a class="edit-fab mono" href={link(`edit?from=${p.handle}`)}>Edit in Showtime ✎</a>
 </Layout>
 
 <style>

@@ -196,6 +196,22 @@
 .ed-notch::before { content: ''; width: 110px; height: 28px; background: #000; border-radius: 0 0 16px 16px; }
 .ed-preview-cap { font-size: 11px; padding: 14px 0 4px; position: sticky; bottom: 0; }
 
+/* ---------- import ---------- */
+.ed-link { color: var(--accent) !important; text-decoration: underline; text-underline-offset: 3px; padding: 0 !important; text-align: left; font-size: 14px; }
+.ed-gh-input { display: flex; align-items: center; border: 1px solid var(--line); background: var(--field); }
+.ed-gh-input:focus-within { border-color: var(--accent); }
+.ed-gh-input > span { padding-left: 12px; font-size: 13px; }
+.ed-gh-input .ed-input { border: 0; padding-left: 2px; }
+.ed-modal-box code { font-family: var(--mono); font-size: 12px; background: var(--line); padding: 1px 4px; }
+.ed-modal-box .ed-hint a { color: var(--accent); }
+.ed-menu .ed-menu-gh { background: color-mix(in srgb, var(--accent) 12%, transparent); }
+.ed-notes { border: 1px solid var(--accent); padding: 14px 16px; margin-bottom: 24px; background: color-mix(in srgb, var(--accent) 6%, transparent); }
+.ed-notes-head { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+.ed-notes-head p { font-size: 11px; }
+.ed-notes ul { padding-left: 18px; display: grid; gap: 6px; font-size: 14px; }
+.ed-busy { position: fixed; inset: 0; z-index: 75; display: grid; place-items: center; background: #000d; font-size: clamp(40px, 8vw, 120px); animation: ed-pulse 1.2s ease-in-out infinite; }
+@keyframes ed-pulse { 50% { opacity: .55; } }
+
 /* ---------- overlays ---------- */
 .ed-toast {
   position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 60;
