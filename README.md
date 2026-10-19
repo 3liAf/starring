@@ -10,6 +10,8 @@
 </p>
 
 <p align="center">
+  <a href="https://pipozzz.github.io/showtime/"><b>Live demo</b></a> ·
+  <a href="https://pipozzz.github.io/showtime/edit"><b>Try the editor</b></a> ·
   <a href="https://github.com/pipozzz/showtime/generate"><b>Use this template</b></a> ·
   <a href="#your-own-showtime-site-in-5-minutes">5-minute setup</a> ·
   <a href="#contributing">Contribute</a>
@@ -32,6 +34,8 @@ Most working developers' best code sits in private repos: client projects, the a
   </tr>
 </table>
 
+> **Try it now:** open the [live demo](https://pipozzz.github.io/showtime/) and type your GitHub username, or browse the sample profiles [Nova](https://pipozzz.github.io/showtime/nova/) and [Milo](https://pipozzz.github.io/showtime/milo/). Nothing is stored on a server.
+
 ## What you get
 
 - **A scroll story in acts.** Hero, the numbers, the client wall, the timeline, featured work, activity, school and skills, and closing credits.
@@ -49,7 +53,7 @@ Most working developers' best code sits in private repos: client projects, the a
 ## Your own Showtime site in 5 minutes
 
 1. Click **[Use this template](https://github.com/pipozzz/showtime/generate)** to create your own repo.
-2. Run it locally (`npm install && npm run dev`) and open **`/edit`**.
+2. Open the editor: use the [hosted one](https://pipozzz.github.io/showtime/edit), or run it locally with `npm install && npm run dev` and open **`/edit`**.
 3. Choose **Start from → GitHub profile** to get an instant draft. Then add the parts GitHub can't see: clients, NDA projects, your timeline, school.
 4. Press **Export .yaml** (⌘S) and save the file as **`profiles/<your-handle>.yaml`**. With exactly one file in `profiles/`, your profile becomes the home page.
 5. In your repo, open **Settings → Pages → Build and deployment** and set **Source: GitHub Actions**.
