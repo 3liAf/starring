@@ -30,6 +30,19 @@ Copy `profiles/nova.yaml` to `profiles/<your-handle>.yaml` and edit it. Each fil
 
 Themes: `acid`, `blood`, `ice`.
 
+## Visual editor
+
+You can build a profile without touching YAML at `/edit`. Start from `/edit?new` for a blank profile, or from `/edit?from=nova` to begin with an existing one.
+
+- The live preview uses the same `ProfileStory` component as the published page, so the preview matches what ships. You can preview it at desktop, tablet or phone width; the layout uses container queries, so the phone view really reflows.
+- Click a section in the preview to jump to its form. Picking a section in the sidebar scrolls the preview to it.
+- Cards can be reordered by dragging or with ↑/↓ buttons, duplicated, or deleted (deleting shows an undo toast). Tags (stack, impact, clients) suggest the clients you've already added.
+- Validation runs as you type, with a badge per section. A "Stage ready" score lists what's still missing.
+- Undo and redo use ⌘Z / ⇧⌘Z, and typing is merged into one undo step. Drafts autosave in the browser.
+- To import, paste YAML, pick a file, or drop a `.yaml` file anywhere on the editor. To export, press ⌘S, which downloads `<handle>.yaml` for `profiles/`.
+
+Today the editor runs entirely in the browser. When registration lands, autosave will go to the database instead of `localStorage`.
+
 ## Architecture: one person or many
 
 The page code only uses the `ProfileStore` interface in `src/lib/profiles.ts`, so it doesn't care where a profile is stored.

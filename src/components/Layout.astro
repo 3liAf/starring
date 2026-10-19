@@ -1,8 +1,8 @@
 ---
 import '../styles/global.css';
 
-interface Props { title: string; description?: string; theme?: string }
-const { title, description = 'Developer careers as scroll stories.', theme = 'acid' } = Astro.props;
+interface Props { title: string; description?: string; theme?: string; /** app pages: no progress bar or scroll effects */ bare?: boolean }
+const { title, description = 'Developer careers as scroll stories.', theme = 'acid', bare = false } = Astro.props;
 ---
 <!doctype html>
 <html lang="en" data-theme={theme}>
@@ -21,7 +21,7 @@ const { title, description = 'Developer careers as scroll stories.', theme = 'ac
     />
   </head>
   <body>
-    <div class="progress" aria-hidden="true"></div>
+    {!bare && <div class="progress" aria-hidden="true"></div>}
     <slot />
     <script>
       const bar = document.querySelector<HTMLElement>('.progress');
