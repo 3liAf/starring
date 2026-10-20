@@ -1,11 +1,21 @@
 ---
 import '../styles/global.css';
+import { themesCss, themeFontsHref, getTheme } from '../themes';
 
-interface Props { title: string; description?: string; theme?: string; /** app pages: no progress bar or scroll effects */ bare?: boolean }
-const { title, description = 'Developer careers as scroll stories.', theme = 'acid', bare = false } = Astro.props;
+interface Props {
+  title: string;
+  description?: string;
+  theme?: string;
+  /** app pages: no progress bar or scroll effects */
+  bare?: boolean;
+  /** theme ids whose fonts to load; omit to load every theme (editor, gallery) */
+  fonts?: (string | undefined)[];
+}
+const { title, description = 'Developer careers as scroll stories.', theme, bare = false, fonts } = Astro.props;
+const themeId = getTheme(theme).id;
 ---
 <!doctype html>
-<html lang="en" data-theme={theme}>
+<html lang="en" data-theme={themeId}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -15,10 +25,8 @@ const { title, description = 'Developer careers as scroll stories.', theme = 'ac
     <meta property="og:description" content={description} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Anton&family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@400;500;700&display=swap"
-      rel="stylesheet"
-    />
+    <link href={themeFontsHref(fonts)} rel="stylesheet" />
+    <style is:inline set:html={themesCss()} />
   </head>
   <body>
     {!bare && <div class="progress" aria-hidden="true"></div>}

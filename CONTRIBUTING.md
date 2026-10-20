@@ -30,8 +30,9 @@ CI runs both.
 | `src/lib/profiles.ts` | `ProfileStore`, which reads YAML from `profiles/` (falling back to `examples/`). |
 | `src/lib/importers/` | Importers. Each one turns an external source into a `Profile`. |
 | `src/story/` | `ProfileStory`, the scroll story. It's used by both the static pages and the editor preview. |
+| `src/themes/` | Themes, one folder each, plus the registry (`index.ts`) and the contract (`define.ts`). |
 | `src/editor/` | The visual editor (React, client-only). |
-| `src/pages/` | Astro routes: `/`, `/[handle]`, `/edit`. |
+| `src/pages/` | Astro routes: `/`, `/[handle]`, `/edit`, `/themes`. |
 
 ## Ground rules
 
@@ -56,7 +57,27 @@ Then add it to the editor's *Start from* menu.
 
 ### Add a theme
 
-Themes are currently colour tokens: see `[data-theme]` in `src/styles/global.css` and `THEMES` in `src/lib/model.ts`. A full theme plugin system with its own type and layout is on the roadmap. If you want to design one, open an issue first so we can shape the API together.
+This is the easiest way to contribute, and every theme shows up in the [gallery](https://pipozzz.github.io/showtime/themes) with your name on it.
+
+```bash
+npm run new:theme -- noir "Film Noir"
+npm run dev   # open /themes and /edit?from=nova&theme=noir
+```
+
+That creates `src/themes/noir/` with two files:
+
+- **`theme.ts`**: `defineTheme({ id, name, description, author, scheme, tokens, fonts })`.
+  - `tokens` are 7 colours: `bg`, `fg`, `muted`, `line`, `accent`, `accentInk`, `redact`.
+  - `fonts` are Google Fonts families for `display`, `body` and `mono`.
+  - It's picked up automatically, with no registry to edit.
+- **`style.css`** (optional): anything the tokens can't express, such as scanlines, glow, marquee bulbs or italic serifs. Scope every selector to `[data-theme='noir']`. See `vhs/`, `broadway/` and `paper/` for examples.
+
+**Checklist for a theme PR:**
+- Text is readable: `fg` on `bg` and `accentInk` on `accent` pass WCAG AA (4.5:1).
+- It looks right at phone width. Use the editor's phone preview.
+- NDA redaction bars (`redact`) are visible on `bg`.
+- Motion respects `prefers-reduced-motion`.
+- The PR includes a screenshot of the hero and of one act.
 
 ## Commits and PRs
 

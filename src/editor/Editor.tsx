@@ -5,6 +5,7 @@ import ProfileStory from '../story/ProfileStory';
 import { importGithub } from '../lib/importers/github';
 import { link } from '../lib/url';
 import GithubDialog from './GithubDialog';
+import { getTheme, hasTheme } from '../themes';
 import {
   ClientsSection, EducationSection, ExperienceSection, NumbersSection, PlatformsSection,
   ProfileSection, ProjectsSection, SkillsSection, type SectionProps,
@@ -85,7 +86,12 @@ export default function Editor({ samples }: Props) {
     const q = new URLSearchParams(location.search);
     const from = q.get('from');
     const sample = samples.find((s) => s.handle === from);
-    if (sample) return { p: structuredClone(sample), source: `Loaded /${sample.handle}` };
+    const theme = q.get('theme');
+    if (sample) {
+      const p = structuredClone(sample);
+      if (theme && hasTheme(theme)) p.theme = theme;
+      return { p, source: theme ? `Loaded /${sample.handle} in ${getTheme(theme).name}` : `Loaded /${sample.handle}` };
+    }
     if (q.has('new')) return { p: blankProfile(), source: 'Blank stage' };
     let draft: Profile | undefined;
     try {
@@ -245,7 +251,10 @@ export default function Editor({ samples }: Props) {
   const Section = section.C;
 
   return (
-    <div className={`ed ed-tab-${mobileTab}`} data-theme={p.theme ?? 'acid'}>
+    <div
+      className={`ed ed-tab-${mobileTab}`}
+      style={{ ['--accent' as string]: getTheme(p.theme).tokens.accent, ['--accent-ink' as string]: getTheme(p.theme).tokens.accentInk }}
+    >
       <header className="ed-top">
         <a href={link()} className="ed-logo display">Show<span className="accent">time</span></a>
         <span className="ed-sep" />
