@@ -2,7 +2,8 @@
 // Shared by the static pages and the visual editor.
 
 export type Visibility = 'public' | 'private' | 'nda';
-export type Theme = 'acid' | 'blood' | 'ice';
+/** A theme id — a folder in src/themes/. */
+export type Theme = string;
 
 export interface Contribution { year: number; public: number; private: number; verified?: boolean }
 export interface Platform { name: string; kind: 'public' | 'private'; repos: number; commits: number }
@@ -49,15 +50,10 @@ export interface Profile {
   skills?: Record<string, string[]>;
 }
 
-export const THEMES: { id: Theme; accent: string; label: string }[] = [
-  { id: 'acid', accent: '#d4ff00', label: 'Acid' },
-  { id: 'blood', accent: '#ff2d2d', label: 'Blood' },
-  { id: 'ice', accent: '#5ce1ff', label: 'Ice' },
-];
 
 export const HANDLE = /^[a-z0-9][a-z0-9-]{1,38}$/;
 /** Handles that would collide with app routes. */
-export const RESERVED = ['edit', 'api', 'login', 'logout', 'settings', 'examples', 'profiles', 'assets', 'admin', 'new'];
+export const RESERVED = ['edit', 'api', 'login', 'logout', 'settings', 'examples', 'profiles', 'assets', 'admin', 'new', 'themes'];
 export const THIS_YEAR = new Date().getFullYear();
 
 export const blankProfile = (): Profile => ({

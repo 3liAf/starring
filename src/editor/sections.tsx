@@ -1,4 +1,6 @@
-import { THEMES, THIS_YEAR, type Issues, type Profile } from '../lib/model';
+import { THIS_YEAR, type Issues, type Profile } from '../lib/model';
+import { link } from '../lib/url';
+import { DEFAULT_THEME, THEMES, getTheme } from '../themes';
 import ListEditor from './ListEditor';
 import { Area, Chips, Combo, Num, Segmented, Text, Toggle } from './fields';
 
@@ -39,21 +41,32 @@ export function ProfileSection({ p, up, issues }: SectionProps) {
 
       <h4 className="ed-sub">Theme</h4>
       <div className="ed-themes" role="radiogroup" aria-label="Theme">
-        {THEMES.map((t) => (
-          <button
-            type="button"
-            role="radio"
-            aria-checked={(p.theme ?? 'acid') === t.id}
-            key={t.id}
-            className={(p.theme ?? 'acid') === t.id ? 'on' : ''}
-            style={{ ['--sw' as string]: t.accent }}
-            onClick={() => up({ theme: t.id })}
-          >
-            <span className="ed-swatch" />
-            {t.label}
-          </button>
-        ))}
+        {THEMES.map((t) => {
+          const on = (p.theme ?? DEFAULT_THEME) === t.id;
+          return (
+            <button
+              type="button"
+              role="radio"
+              aria-checked={on}
+              key={t.id}
+              data-theme={t.id}
+              className={`ed-theme${on ? ' on' : ''}`}
+              onClick={() => up({ theme: t.id })}
+              title={`${t.description} — by ${t.author.name}`}
+            >
+              <span className="ed-theme-sample display">{t.name}</span>
+              <span className="ed-theme-chips" aria-hidden="true">
+                <i style={{ background: t.tokens.fg }} />
+                <i style={{ background: t.tokens.accent }} />
+                <i style={{ background: t.tokens.muted }} />
+              </span>
+            </button>
+          );
+        })}
       </div>
+      <p className="ed-hint ed-theme-more">
+        {getTheme(p.theme).description} <a href={link('themes')} target="_blank" rel="noreferrer">All themes ↗</a>
+      </p>
 
       <h4 className="ed-sub">Links</h4>
       <div className="ed-grid">

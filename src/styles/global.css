@@ -11,8 +11,7 @@
   --mono: 'JetBrains Mono', ui-monospace, monospace;
   --gutter: clamp(16px, 4vw, 56px);
 }
-[data-theme='blood'] { --accent: #ff2d2d; --accent-ink: #0a0a0a; }
-[data-theme='ice'] { --accent: #5ce1ff; --accent-ink: #0a0a0a; }
+/* Theme tokens come from src/themes/<id>/theme.ts, injected by Layout.astro. :root holds the fallback. */
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }

@@ -10,7 +10,7 @@ export function getStaticPaths() {
 
 const { p } = Astro.props as { p: Profile };
 ---
-<Layout title={`${p.profile.name} — Showtime`} description={p.profile.tagline} theme={p.theme}>
+<Layout title={`${p.profile.name} — Showtime`} description={p.profile.tagline} theme={p.theme} fonts={[p.theme]}>
   <ProfileStory p={p} />
   <a class="edit-fab mono" href={link(`edit?from=${p.handle}`)}>Edit in Showtime ✎</a>
 </Layout>

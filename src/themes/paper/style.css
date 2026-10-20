@@ -1,0 +1,14 @@
+/* Paper — editorial serif. Everything is scoped to [data-theme='paper']. */
+[data-theme='paper'] .display {
+  text-transform: none;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 0.92;
+}
+[data-theme='paper'] .hero-name .line.accent { font-style: italic; }
+[data-theme='paper'] .project-title,
+[data-theme='paper'] .credits h2 .accent { font-style: italic; }
+[data-theme='paper'] .impact li { font-style: italic; }
+[data-theme='paper'] .marquee-track { font-style: italic; }
+[data-theme='paper'] .stat b { font-size: clamp(52px, 7cqi, 128px); }
+[data-theme='paper'] .tag { border-radius: 999px; padding: 2px 10px; }

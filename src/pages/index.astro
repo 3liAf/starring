@@ -9,7 +9,7 @@ const profiles = store.list();
 const me = store.mode === 'personal' ? profiles[0] : undefined;
 ---
 {me ? (
-<Layout title={`${me.profile.name} — Showtime`} description={me.profile.tagline} theme={me.theme}>
+<Layout title={`${me.profile.name} — Showtime`} description={me.profile.tagline} theme={me.theme} fonts={[me.theme]}>
   <ProfileStory p={me} />
 </Layout>
 ) : (
@@ -33,6 +33,7 @@ const me = store.mode === 'personal' ? profiles[0] : undefined;
     <div class="cta">
       <a class="btn ghost" href="#stages">See the stages ↓</a>
       <a class="btn ghost" href={link('edit?new')}>Start blank</a>
+      <a class="btn ghost" href={link('themes')}>Browse themes</a>
       <a class="btn ghost" href="https://github.com/pipozzz/showtime/generate">Use as GitHub template</a>
     </div>
   </header>
@@ -91,7 +92,9 @@ const me = store.mode === 'personal' ? profiles[0] : undefined;
   }
   .btn.ghost { background: transparent; color: var(--fg); border: 1px solid var(--line); }
   .btn.ghost.off { color: var(--muted); cursor: not-allowed; }
-  .stages { list-style: none; }
+  .stages { list-style: none; display: grid; gap: 12px; }
+  .stages li { background: var(--bg); color: var(--fg); padding: 0 clamp(16px, 3vw, 40px); border: 1px solid var(--line); }
+  .stages li a { border-bottom: 0; }
   .stages a {
     display: grid; grid-template-columns: 1fr auto; gap: 6px 24px; padding: 5vh 0;
     border-bottom: 1px solid var(--line); text-decoration: none;

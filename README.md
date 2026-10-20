@@ -75,7 +75,7 @@ Requires Node 22.22 or newer.
 
 ```yaml
 handle: nova
-theme: acid            # acid | blood | ice
+theme: acid            # any folder in src/themes/ — see /themes
 profile:
   name: Nova Kováč
   role: Senior Frontend & Platform Engineer
@@ -97,6 +97,20 @@ For a full example, see [`examples/nova.yaml`](examples/nova.yaml), which shows 
 | nothing | demo: the samples from `examples/` |
 | one file | that profile, so the repo works as a personal site |
 | several files | a directory of all profiles, each at `/<handle>` |
+
+## Themes
+
+Six themes ship today: **Acid**, **Blood**, **Ice**, **Paper** (light, editorial serif), **VHS** (scanlines and chromatic edges) and **Broadway** (gold marquee bulbs). You can browse them in the [theme gallery](https://pipozzz.github.io/showtime/themes) or try one in the editor.
+
+<p align="center"><img src="docs/screenshots/themes.png" alt="Theme gallery: Broadway with marquee bulbs, Ice, Paper in italic serif, and VHS with scanlines" width="100%" /></p>
+
+A theme is a folder with 7 colour tokens, 3 Google Fonts and optional CSS. To create one:
+
+```bash
+npm run new:theme -- noir "Film Noir"
+```
+
+It appears in the gallery and the editor straight away. See [CONTRIBUTING → Add a theme](CONTRIBUTING.md#add-a-theme).
 
 ## Visual editor
 
@@ -125,7 +139,7 @@ Open `/edit`, `/edit?new` for a blank profile, `/edit?from=<handle>` to edit an 
 - [x] Visual editor with live, responsive preview
 - [x] Instant draft from GitHub
 - [x] GitHub Pages template workflow
-- [ ] Theme plugins (`themes/<name>`) and a theme gallery
+- [x] Theme plugins (`src/themes/<id>`) and a theme gallery
 - [ ] Movie-poster Open Graph image per profile
 - [ ] GitLab / Bitbucket / Gitea importers
 - [ ] Local `showtime scan` CLI for private repos
@@ -148,7 +162,7 @@ Postgres  ──┘   └──────────────┘   └─�
 
 Contributions of every size are welcome. Good places to start:
 
-- **A theme.** Pick a colour palette and type for the stage. This is the easiest first PR.
+- **A theme.** Run `npm run new:theme -- <id>`, pick 7 colours and 3 fonts, and open a PR. This is the easiest first PR.
 - **An importer**, for GitLab, Bitbucket, Gitea or JSON Resume. Each one is a small, self-contained module.
 - **Translations** of the story labels.
 - **Bug reports with a profile YAML** that renders wrong.

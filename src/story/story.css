@@ -64,7 +64,7 @@
   border: 1px solid var(--line); padding: clamp(24px, 4cqi, 56px);
   display: grid; gap: 18px; min-height: 70vh; align-content: center; position: relative;
 }
-.project.vis-nda { background: repeating-linear-gradient(135deg, transparent 0 22px, #ffffff06 22px 44px); }
+.project.vis-nda { background: repeating-linear-gradient(135deg, transparent 0 22px, color-mix(in srgb, var(--fg) 4%, transparent) 22px 44px); }
 .project-meta { display: flex; gap: 20px; align-items: center; }
 .project-title { font-size: clamp(40px, 7cqi, 112px); max-width: 14ch; overflow-wrap: anywhere; }
 .project-blurb { font-size: clamp(18px, 1.8cqi, 24px); max-width: 52ch; }

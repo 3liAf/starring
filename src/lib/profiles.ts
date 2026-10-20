@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { parse } from 'yaml';
 import { HANDLE, RESERVED, type Profile } from './model';
+import { THEMES, hasTheme } from '../themes';
 
 export * from './model';
 
@@ -27,6 +28,7 @@ const readDir = (dir: string): Profile[] =>
           if (!p?.handle || !HANDLE.test(p.handle)) throw new Error(`${dir}/${f}: invalid or missing handle`);
           if (RESERVED.includes(p.handle)) throw new Error(`${dir}/${f}: handle "${p.handle}" is reserved`);
           if (!p.profile?.name) throw new Error(`${dir}/${f}: profile.name is required`);
+          if (!hasTheme(p.theme)) throw new Error(`${dir}/${f}: unknown theme "${p.theme}" — available: ${THEMES.map((t) => t.id).join(', ')}`);
           return p;
         })
         .sort((a, b) => a.handle.localeCompare(b.handle));
