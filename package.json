@@ -10,6 +10,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "new:theme": "node scripts/new-theme.mjs",
+    "test": "node --test src/lib/importers/*.test.ts",
     "dev:server": "SHOWTIME_MODE=server astro dev",
     "build:server": "SHOWTIME_MODE=server astro build",
     "start": "node scripts/migrate.mjs && node dist/server/entry.mjs",

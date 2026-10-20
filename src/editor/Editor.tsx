@@ -3,6 +3,7 @@ import { parse, stringify } from 'yaml';
 import { blankProfile, totals, validate, type Profile } from '../lib/model';
 import ProfileStory from '../story/ProfileStory';
 import { importGithub } from '../lib/importers/github';
+import { importJsonResume } from '../lib/importers/jsonresume';
 import { link } from '../lib/url';
 import GithubDialog from './GithubDialog';
 import { useServer, type SyncStatus } from './useServer';
@@ -123,6 +124,7 @@ export default function Editor({ samples }: Props) {
   const [toast, setToast] = useState<{ msg: string; undo?: boolean; id: number } | null>({ msg: initial.source, id: 0 });
   const [saved, setSaved] = useState<'saved' | 'saving' | 'off'>('saved');
   const [importOpen, setImportOpen] = useState(false);
+  const [importMode, setImportMode] = useState<'fresh' | 'merge'>('merge');
   const [gh, setGh] = useState<{ open: boolean; user?: string; error?: string; busy?: boolean }>({ open: false });
   const [notes, setNotes] = useState<string[]>([]);
   const [menu, setMenu] = useState<'start' | 'ready' | null>(null);
@@ -209,9 +211,15 @@ export default function Editor({ samples }: Props) {
 
   const load = (raw: string, label: string) => {
     try {
-      const next = normalize(parse(raw));
-      commit(next);
-      notify(`${label} — Cmd+Z to undo`, true);
+      const data = parse(raw);
+      if (data && typeof data === 'object' && 'basics' in data) {
+        const result = importJsonResume(data, { base: importMode === 'merge' ? p : undefined });
+        imported(result.profile, result.notes, `${label} from JSON Resume`);
+      } else {
+        commit(normalize(data));
+        setNotes([]);
+        notify(`${label} — Cmd+Z to undo`, true);
+      }
       setImportOpen(false);
     } catch (e) {
       notify(`Import failed: ${(e as Error).message}`);
@@ -285,7 +293,7 @@ export default function Editor({ samples }: Props) {
                 </button>
               ))}
               <hr />
-              <button type="button" onClick={() => { setImportOpen(true); setMenu(null); }}>Import YAML…</button>
+              <button type="button" onClick={() => { setImportOpen(true); setMenu(null); }}>Import YAML / JSON Resume…</button>
             </div>
           )}
         </div>
@@ -399,12 +407,12 @@ export default function Editor({ samples }: Props) {
         {notes.length > 0 && active === 'profile' && (
           <aside className="ed-notes">
             <div className="ed-notes-head">
-              <p className="mono accent">Imported from GitHub — finish the story</p>
+              <p className="mono accent">Imported — finish the story</p>
               <button type="button" aria-label="Dismiss" onClick={() => setNotes([])}>✕</button>
             </div>
             <ul>
               {notes.map((n) => <li key={n}>{n}</li>)}
-              <li>GitHub can’t see your client work — add <button type="button" className="ed-link" onClick={() => pick('clients')}>clients</button>, <button type="button" className="ed-link" onClick={() => pick('experience')}>timeline</button> and <button type="button" className="ed-link" onClick={() => pick('projects')}>NDA projects</button>.</li>
+              <li>Review your <button type="button" className="ed-link" onClick={() => pick('clients')}>clients</button>, <button type="button" className="ed-link" onClick={() => pick('experience')}>timeline</button> and <button type="button" className="ed-link" onClick={() => pick('projects')}>NDA projects</button> to complete the story.</li>
             </ul>
           </aside>
         )}
@@ -429,10 +437,19 @@ export default function Editor({ samples }: Props) {
       {gh.open && <GithubDialog current={p} initialUser={gh.user} initialError={gh.error} onDone={imported} onClose={() => setGh({ open: false })} />}
       {gh.busy && <div className="ed-busy display" role="status">Reading GitHub<span className="accent">…</span></div>}
       {importOpen && (
-        <div className="ed-modal" role="dialog" aria-modal="true" aria-label="Import YAML" onClick={(e) => e.target === e.currentTarget && setImportOpen(false)}>
+        <div className="ed-modal" role="dialog" aria-modal="true" aria-label="Import profile" onClick={(e) => e.target === e.currentTarget && setImportOpen(false)}>
           <form className="ed-modal-box" onSubmit={(e) => { e.preventDefault(); load(new FormData(e.currentTarget).get('yaml') as string, 'Imported'); }}>
             <h3 className="display">Import profile</h3>
-            <p className="muted">Paste YAML or JSON, choose a file, or drop a file anywhere on the editor.</p>
+            <p className="muted">Paste a Showtime profile or JSON Resume, choose a file, or drop a file anywhere on the editor. Conversion stays in this browser.</p>
+            <div className="ed-seg" role="radiogroup" aria-label="JSON Resume import mode">
+              <label className={importMode === 'fresh' ? 'on' : ''}>
+                <input type="radio" name="resume-mode" checked={importMode === 'fresh'} onChange={() => setImportMode('fresh')} />Start fresh
+              </label>
+              <label className={importMode === 'merge' ? 'on' : ''}>
+                <input type="radio" name="resume-mode" checked={importMode === 'merge'} onChange={() => setImportMode('merge')} />Merge into current
+              </label>
+            </div>
+            <p className="ed-hint">{importMode === 'merge' ? 'JSON Resume keeps existing clients, timeline, education and projects, including NDA work. Matching entries stay unchanged.' : 'JSON Resume replaces the draft (you can undo).'} Showtime YAML replaces the draft in either mode.</p>
             <textarea name="yaml" className="ed-input ed-code" rows={14} placeholder={'handle: you\nprofile:\n  name: …'} autoFocus />
             <div className="ed-modal-actions">
               <button type="button" className="ed-btn ghost" onClick={() => fileInput.current?.click()}>Choose file…</button>
@@ -445,7 +462,7 @@ export default function Editor({ samples }: Props) {
       )}
       <input ref={fileInput} type="file" accept=".yaml,.yml,.json" hidden onChange={(e) => e.target.files?.[0] && loadFile(e.target.files[0])} />
 
-      {dropping && <div className="ed-drop display">Drop your YAML</div>}
+      {dropping && <div className="ed-drop display">Drop your YAML or JSON Resume</div>}
 
       {toast && (
         <div className="ed-toast mono" role="status" key={toast.id}>
