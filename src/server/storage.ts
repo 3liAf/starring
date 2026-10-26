@@ -7,7 +7,7 @@
 // Keys look like photos/<user id>/<random>.jpg, so everything a user uploaded shares a prefix.
 
 import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises';
-import { dirname, join, resolve } from 'node:path';
+import { dirname, join, resolve, sep } from 'node:path';
 import { AwsClient } from 'aws4fetch';
 
 export interface Storage {
@@ -29,9 +29,10 @@ export const typeOf = (key: string) => TYPES[key.split('.').pop() ?? ''] ?? 'app
 
 export function localStorage(dir: string): Storage {
   const root = resolve(dir);
+  const prefix = root.endsWith(sep) ? root : root + sep;
   const path = (key: string) => {
     const p = resolve(join(root, key));
-    if (!p.startsWith(root + '/')) throw new Error('bad key');
+    if (!p.startsWith(prefix) && !p.startsWith(root + '/')) throw new Error('bad key');
     return p;
   };
   return {
