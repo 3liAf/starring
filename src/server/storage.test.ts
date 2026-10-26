@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { join, sep } from 'node:path';
 import { test } from 'node:test';
 import { SAFE_KEY, keyFromUrl, localStorage, prune, s3Storage, storage } from './storage';
 
@@ -25,6 +25,9 @@ test('local: put, get, list, prune; keys can’t escape the folder', async () =>
   assert.deepEqual(await s.list('photos/u2/'), ['photos/u2/c.jpg'], 'other users untouched');
   assert.equal(await s.get('photos/nobody/x.jpg'), null);
   await assert.rejects(() => s.put('../../etc/x.jpg', new Uint8Array([1]), 'image/jpeg'));
+  if (sep === '\\') {
+    await assert.rejects(() => s.put('..\\..\\etc\\x.jpg', new Uint8Array([1]), 'image/jpeg'));
+  }
   assert.equal(s.url('photos/u1/b.jpg'), '/media/photos/u1/b.jpg');
 });
 

@@ -32,7 +32,7 @@ export function localStorage(dir: string): Storage {
   const prefix = root.endsWith(sep) ? root : root + sep;
   const path = (key: string) => {
     const p = resolve(join(root, key));
-    if (!p.startsWith(prefix) && !p.startsWith(root + '/')) throw new Error('bad key');
+    if (!p.startsWith(prefix)) throw new Error('bad key');
     return p;
   };
   return {
