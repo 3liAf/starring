@@ -23,6 +23,7 @@ Nothing. The scan runs locally and makes no network requests. The output file co
 | Option | |
 | --- | --- |
 | `-e, --email <addr>` | Your commit email. Repeat it for each address you've used. Default: `git config user.email` |
+| `--co-authored` | Also count commits where your email appears in `Co-authored-by:` trailers |
 | `--since <date>` | Only count commits after a date, e.g. `2015-01-01` |
 | `--exclude <host>` | Skip repos hosted on this host, e.g. `github.com` when the GitHub importer already counts your public work |
 | `--depth <n>` | How deep to look for repos (default 6). `node_modules`, `vendor`, build folders and hidden folders are skipped |

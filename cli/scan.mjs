@@ -60,7 +60,7 @@ export function hostKind(repo, { revealHosts = false } = {}) {
  * Commits are de-duplicated by hash, so forks and multiple clones count once.
  * Returns only aggregates: per year, per day (for the heatmap), per host kind.
  */
-export function scan(repos, { emails, since, revealHosts = false, exclude = [], onRepo } = {}) {
+export function scan(repos, { emails, since, revealHosts = false, exclude = [], coauthored = false, onRepo } = {}) {
   const wanted = new Set(emails.map((e) => e.trim().toLowerCase()).filter(Boolean));
   if (!wanted.size) throw new Error('No author email: pass --email you@company.com (or set git config --global user.email)');
   const seen = new Set();
@@ -68,6 +68,8 @@ export function scan(repos, { emails, since, revealHosts = false, exclude = [], 
   const days = new Map();
   const platforms = new Map();
   let counted = 0;
+  let authored = 0;
+  let coauthoredCount = 0;
   const excluded = exclude.map((e) => e.toLowerCase());
   let skipped = 0;
   for (const repo of repos) {
@@ -81,21 +83,54 @@ export function scan(repos, { emails, since, revealHosts = false, exclude = [], 
     }
     let out = '';
     try {
-      out = git(repo, ['log', '--all', '--no-merges', '--format=%H%x09%ae%x09%aI', ...(since ? [`--since=${since}`] : [])]);
+      const format = coauthored
+        ? '%x1e%H%x1f%ae%x1f%aI%x1f%(trailers:key=Co-authored-by,valueonly)'
+        : '%H%x09%ae%x09%aI';
+      out = git(repo, ['log', '--all', '--no-merges', `--format=${format}`, ...(since ? [`--since=${since}`] : [])]);
     } catch {
       onRepo?.(repo, 0, 'skipped (not readable)');
       continue;
     }
     let mine = 0;
-    for (const line of out.split('\n')) {
-      const [hash, email, date] = line.split('\t');
-      if (!hash || !wanted.has(email?.toLowerCase()) || seen.has(hash)) continue;
-      seen.add(hash);
-      mine++;
-      const day = date.slice(0, 10);
-      const year = Number(day.slice(0, 4));
-      years.set(year, (years.get(year) ?? 0) + 1);
-      days.set(day, (days.get(day) ?? 0) + 1);
+    if (coauthored) {
+      for (const record of out.split('\x1e')) {
+        if (!record.trim()) continue;
+        const [hash, email, date, trailerBlock] = record.split('\x1f');
+        if (!hash || seen.has(hash)) continue;
+        const isAuthor = wanted.has(email?.toLowerCase());
+        let isCoauthor = false;
+        if (!isAuthor && trailerBlock) {
+          for (const line of trailerBlock.split('\n')) {
+            const trimmed = line.trim();
+            if (!trimmed) continue;
+            const trailerEmail = (/<([^>]+)>/.exec(trimmed)?.[1] ?? trimmed).toLowerCase();
+            if (wanted.has(trailerEmail)) {
+              isCoauthor = true;
+              break;
+            }
+          }
+        }
+        if (!isAuthor && !isCoauthor) continue;
+        seen.add(hash);
+        mine++;
+        if (isAuthor) authored++; else coauthoredCount++;
+        const day = date.slice(0, 10);
+        const year = Number(day.slice(0, 4));
+        years.set(year, (years.get(year) ?? 0) + 1);
+        days.set(day, (days.get(day) ?? 0) + 1);
+      }
+    } else {
+      for (const line of out.split('\n')) {
+        const [hash, email, date] = line.split('\t');
+        if (!hash || !wanted.has(email?.toLowerCase()) || seen.has(hash)) continue;
+        seen.add(hash);
+        mine++;
+        authored++;
+        const day = date.slice(0, 10);
+        const year = Number(day.slice(0, 4));
+        years.set(year, (years.get(year) ?? 0) + 1);
+        days.set(day, (days.get(day) ?? 0) + 1);
+      }
     }
     if (mine) {
       counted++;
@@ -109,7 +144,13 @@ export function scan(repos, { emails, since, revealHosts = false, exclude = [], 
     kind: 'starring-activity',
     version: 1,
     generatedAt: new Date().toISOString(),
-    totals: { commits: seen.size, repos: counted, reposScanned: repos.length - skipped, reposExcluded: skipped },
+    totals: {
+      commits: seen.size,
+      ...(coauthored ? { authored, coauthored: coauthoredCount } : {}),
+      repos: counted,
+      reposScanned: repos.length - skipped,
+      reposExcluded: skipped,
+    },
     years: [...years].sort((a, b) => b[0] - a[0]).map(([year, commits]) => ({ year, commits })),
     days: Object.fromEntries([...days].sort()),
     platforms: [...platforms].sort((a, b) => b[1].commits - a[1].commits).map(([name, v]) => ({ name, ...v })),

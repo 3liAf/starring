@@ -17,6 +17,7 @@ Writes only dates and counts — no code, messages, repo names or emails. Nothin
 
 Options
   -e, --email <addr>     your commit email (repeatable; default: git config user.email)
+      --co-authored      also count commits where your email appears in Co-authored-by trailers
       --since <date>     only commits after this date, e.g. 2015-01-01
       --exclude <host>   skip repos hosted here (repeatable), e.g. github.com if the GitHub
                          importer already counts your public work
@@ -35,6 +36,7 @@ const { values, positionals } = parseArgs({
   allowPositionals: true,
   options: {
     email: { type: 'string', short: 'e', multiple: true },
+    'co-authored': { type: 'boolean' },
     since: { type: 'string' },
     exclude: { type: 'string', multiple: true },
     depth: { type: 'string' },
@@ -68,6 +70,7 @@ let result;
 try {
   result = scan(repos, {
     emails,
+    coauthored: values['co-authored'],
     since: values.since,
     exclude: values.exclude ?? [],
     revealHosts: values['reveal-hosts'],
@@ -84,7 +87,8 @@ if (toStdout) {
 } else {
   const out = values.out ?? 'starring-activity.json';
   writeFileSync(out, json + '\n');
-  log(`\n${result.totals.commits.toLocaleString('en')} commits in ${result.totals.repos} repos`);
+  const co = result.totals.coauthored ? ` (${result.totals.authored.toLocaleString('en')} authored, ${result.totals.coauthored.toLocaleString('en')} co-authored)` : '';
+  log(`\n${result.totals.commits.toLocaleString('en')} commits${co} in ${result.totals.repos} repos`);
   for (const y of result.years.slice(0, 8)) log(`  ${y.year}  ${'█'.repeat(Math.max(1, Math.round((y.commits / result.years.reduce((m, x) => Math.max(m, x.commits), 1)) * 30)))} ${y.commits}`);
   for (const p of result.platforms) log(`  ${p.name}: ${p.repos} repos, ${p.commits} commits`);
   log(`\n✓ Wrote ${out} — only dates and counts; open it to check.`);
