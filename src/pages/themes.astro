@@ -9,7 +9,7 @@ const sample = (await store.list())[0];
 const [first, ...rest] = (sample?.profile.name ?? 'Your Name').split(' ');
 ---
 <Layout title="Themes — Starring" description="Every Starring theme, made by the community.">
-  <main>
+  <main id="content" tabindex="-1">
   <header class="th-head">
     <a class="mono accent" href={link()}>← Starring</a>
     <h1 class="display">Themes<span class="accent">.</span></h1>

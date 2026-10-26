@@ -10,7 +10,7 @@ const target = handle ? await getPublished(handle) : undefined;
 if (!target) return new Response(null, { status: 404 });
 ---
 <Layout title={`Report /${handle} — Starring`} fonts={['acid']} noindex>
-  <main class="auth" data-handle={handle}>
+  <main class="auth" id="content" tabindex="-1" data-handle={handle}>
     <a class="mono accent back" href={link(handle)}>← /{handle}</a>
     <h1 class="display">Report<br /><span class="accent">/{handle}</span></h1>
     <p class="muted">Tell the operator what's wrong with <b>{target.profile.name}</b>'s profile. Reports are reviewed by a person; the profile owner doesn't see who reported it.</p>
