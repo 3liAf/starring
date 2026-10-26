@@ -27,6 +27,36 @@ body {
 a { color: inherit; }
 ::selection { background: var(--accent); color: var(--accent-ink); }
 
+/* Accessibility: skip link for keyboard & screen-reader navigation */
+.skip-link {
+  position: fixed;
+  top: 0;
+  left: 16px;
+  transform: translateY(-120%);
+  z-index: 1000;
+  padding: 8px 16px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border: 1px solid var(--accent);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  transition: transform 0.15s ease-out;
+}
+.skip-link:focus,
+.skip-link:focus-visible {
+  transform: translateY(16px);
+  outline: 2px solid var(--accent-ink);
+  outline-offset: 2px;
+}
+main:focus {
+  outline: none;
+}
+
 .display {
   font-family: var(--display);
   text-transform: uppercase;
