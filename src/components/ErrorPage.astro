@@ -6,7 +6,7 @@ interface Props { code: string; title: string; line: string }
 const { code, title, line } = Astro.props;
 ---
 <Layout title={`${title} — Starring`} fonts={['acid']} noindex>
-  <main class="err">
+  <main class="err" id="content" tabindex="-1">
     <p class="mono accent">Error {code}</p>
     <h1 class="display">{title.split(' ')[0]}<br /><span class="accent">{title.split(' ').slice(1).join(' ')}</span></h1>
     <p class="line">{line}</p>
