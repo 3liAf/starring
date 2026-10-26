@@ -4,6 +4,7 @@ import { resolveSnippet } from '../lib/plausible';
 import { link } from '../lib/url';
 import { DEFAULT_THEME, THEMES, getTheme } from '../themes';
 import ListEditor from './ListEditor';
+import PhotoField from './PhotoField';
 import { Area, Chips, Combo, Num, Segmented, Text, Toggle } from './fields';
 
 export interface SectionProps {
@@ -11,13 +12,15 @@ export interface SectionProps {
   up: (patch: Partial<Profile>) => void;
   issues: Issues;
   notify: (msg: string, undo?: boolean) => void;
+  /** Signed in on an instance that stores uploads. */
+  canUpload?: boolean;
 }
 
 const has = (issues: Issues, prefix: string) => Object.keys(issues).some((k) => k.startsWith(prefix));
 
 const LINK_KEYS = ['github', 'gitlab', 'linkedin', 'website', 'x', 'email'];
 
-export function ProfileSection({ p, up, issues }: SectionProps) {
+export function ProfileSection({ p, up, issues, notify, canUpload = false }: SectionProps) {
   const me = p.profile;
   const set = (patch: Partial<Profile['profile']>) => up({ profile: { ...me, ...patch } });
   const links = me.links ?? {};
@@ -27,6 +30,7 @@ export function ProfileSection({ p, up, issues }: SectionProps) {
       <div className="ed-grid">
         <Text label="Name" value={me.name} onChange={(name) => set({ name })} error={issues['profile.name']} hint="First word goes white, the rest gets the accent" wide />
         <Text label="Role" value={me.role} onChange={(role) => set({ role })} error={issues['profile.role']} wide />
+        <PhotoField value={me.photo} onChange={(photo) => set({ photo })} canUpload={canUpload} error={issues['profile.photo']} notify={notify} />
         <Area label="Tagline" value={me.tagline} onChange={(tagline) => set({ tagline })} max={120} placeholder="One line people remember." wide />
         <Text label="Location" value={me.location} onChange={(location) => set({ location })} placeholder="City, Country" />
         <Text
@@ -143,7 +147,10 @@ export function NumbersSection({ p, up }: SectionProps) {
   const nextYear = rows.length ? Math.min(...rows.map((r) => r.year)) - 1 : THIS_YEAR - 1;
   return (
     <>
-      <p className="ed-lead">Commits per year. Private = work in client or company repos that GitHub can't show. Importers will fill this automatically later.</p>
+      <p className="ed-lead">Commits per year. Private = work in client or company repos that GitHub can't show.</p>
+      <p className="ed-hint">
+        For the real heatmap, run <code>npx starring-cli scan ~/code</code> on your machine and drop the <code>starring-activity.json</code> it writes onto this editor. It counts commits locally; only dates and counts leave your machine.
+      </p>
       <div className="ed-table">
         <div className="ed-tr ed-th"><span>Year</span><span>Public</span><span>Private</span><span>Imported</span><span /></div>
         {rows.map((r, i) => {
@@ -425,6 +432,44 @@ const TALK_KINDS = [
   { id: 'video', label: 'Video' },
   { id: 'book', label: 'Book' },
 ] as const;
+
+const OSS_KINDS = [
+  { id: 'code', label: 'Code' },
+  { id: 'docs', label: 'Docs' },
+  { id: 'translation', label: 'Translation' },
+  { id: 'design', label: 'Design' },
+  { id: 'maintainer', label: 'Maintainer' },
+] as const;
+
+export function OpenSourceSection({ p, up, issues, notify }: SectionProps) {
+  return (
+    <>
+      <p className="ed-lead">Your cameos in other people's projects: a merged PR, a translation, docs, a maintainer role. Big names here say a lot. <b>Import from GitHub</b> finds your merged pull requests for you.</p>
+      <ListEditor
+        items={p.openSource ?? []}
+        onChange={(openSource) => up({ openSource })}
+        make={() => ({ repo: '', what: '', kind: 'code' as const, year: THIS_YEAR })}
+        title={(x) => x.repo}
+        meta={(x) => <span className="ed-pill">{x.kind ?? 'code'}</span>}
+        addLabel="Add contribution"
+        empty="E.g. liketrek/TREK — Slovak translation, or kubernetes/website — docs fixes."
+        invalid={(i) => has(issues, `openSource.${i}.`)}
+        onRemove={(x) => notify(`Removed ${x.repo || 'contribution'}`, true)}
+        render={(x, set, i) => (
+          <div className="ed-grid">
+            <Text label="Project" value={x.repo} onChange={(repo) => set({ repo })} placeholder="owner/name" hint="owner/name on GitHub shows the project's logo" error={issues[`openSource.${i}.repo`]} />
+            <Num label="Year" value={x.year} min={1950} max={THIS_YEAR + 1} onChange={(year) => set({ year })} error={issues[`openSource.${i}.year`]} />
+            <Text label="What you did" value={x.what} onChange={(what) => set({ what })} placeholder="Slovak translation" error={issues[`openSource.${i}.what`]} wide />
+            <Segmented label="Kind" value={x.kind ?? 'code'} onChange={(kind) => set({ kind })} options={OSS_KINDS.map((k) => ({ ...k }))} />
+            <Num label="Merged PRs" value={x.prs} min={0} max={100000} onChange={(prs) => set({ prs: prs || undefined })} />
+            <Text label="Link" value={x.url} onChange={(url) => set({ url: url || undefined })} placeholder="https://github.com/owner/name/pull/123" error={issues[`openSource.${i}.url`]} wide />
+            <Text label="Logo (optional)" value={x.logo} onChange={(logo) => set({ logo: logo || undefined })} placeholder="https://… — GitHub projects get theirs automatically" error={issues[`openSource.${i}.logo`]} wide />
+          </div>
+        )}
+      />
+    </>
+  );
+}
 
 export function TalksSection({ p, up, issues, notify }: SectionProps) {
   return (
