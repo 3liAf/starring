@@ -110,6 +110,7 @@ const plausibleSrc = (() => {
     <style is:inline set:html={themesCss()} />
   </head>
   <body>
+    {!bare && <a class="skip-link" href="#content">Skip to content</a>}
     {!bare && <div class="progress" aria-hidden="true"></div>}
     <slot />
     <script>

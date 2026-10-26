@@ -23,7 +23,7 @@ Nothing. The scan runs locally and makes no network requests. The output file co
 | Option | |
 | --- | --- |
 | `-e, --email <addr>` | Your commit email. Repeat it for each address you've used. Default: `git config user.email` |
-| `--co-authored` | Also count commits where your email appears in `Co-authored-by:` trailers |
+| `--co-authored` | Also count commits where your email appears in `Co-authored-by:` trailers (requires git 2.22+) |
 | `--since <date>` | Only count commits after a date, e.g. `2015-01-01` |
 | `--exclude <host>` | Skip repos hosted on this host, e.g. `github.com` when the GitHub importer already counts your public work |
 | `--depth <n>` | How deep to look for repos (default 6). `node_modules`, `vendor`, build folders and hidden folders are skipped |
@@ -31,6 +31,11 @@ Nothing. The scan runs locally and makes no network requests. The output file co
 | `--reveal-hosts` | Name self-hosted servers instead of anonymising them |
 | `-q, --quiet` | Don't list repos while scanning |
 
+> **Tip for GitHub users:** when someone adds you as a co-author on GitHub, or a squash merge credits a PR's other committers, the `Co-authored-by:` trailer usually holds your private noreply address (e.g. `12345+username@users.noreply.github.com`). Pass it with `-e` so those commits match:
+> ```bash
+> npx starring-cli scan ~/work -e me@company.com -e 12345+username@users.noreply.github.com --co-authored
+> ```
+
 Commits are counted across all branches, excluding merges. They're de-duplicated by hash, so forks and several clones of the same repo count once.
 
-Requires Node 20+ and `git`. No dependencies.
+Requires Node 20+ and `git` (2.22+ for `--co-authored`). No dependencies.

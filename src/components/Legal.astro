@@ -8,7 +8,7 @@ const { title, description } = Astro.props;
 const op = operator();
 ---
 <Layout title={`${title} — Starring`} description={description} fonts={['acid']}>
-  <main class="legal">
+  <main class="legal" id="content" tabindex="-1">
     <a class="mono accent back" href={link()}>← Starring</a>
     <h1 class="display">{title}</h1>
     <p class="mono muted">Last updated {op.updated}</p>

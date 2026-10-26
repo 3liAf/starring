@@ -31,7 +31,7 @@ const locations = [...new Set(profiles.map((x) => x.location.split(',').pop()!.t
 const n = (v: number) => v.toLocaleString('en');
 ---
 <Layout title="Explore developers — Starring" description={`${profiles.length} developer careers as scroll stories — search by role, skill, location and availability.`}>
-  <main class="ex">
+  <main class="ex" id="content" tabindex="-1">
     <header class="ex-head">
       <a class="mono accent back" href={link()}>← Starring</a>
       <h1 class="display">Now<br /><span class="accent">playing.</span></h1>

@@ -43,7 +43,7 @@ const oembed = SERVER_MODE ? `${new URL(link('oembed'), publicBase(Astro.site, A
   oembed={oembed}
   profileName={{ first, last: rest.join(' '), username: profile.handle }}
 >
-  <main>
+  <main id="content" tabindex="-1">
     <ProfileStory p={profile} site={Astro.locals.customDomain ? publicBase(Astro.site, Astro.url).href : undefined} />
     <a class="edit-fab mono" href={link(`edit?from=${profile.handle}`)}>Edit in Starring ✎</a>
     {SERVER_MODE && <a class="report-link mono" href={`${link('report')}?h=${profile.handle}`} rel="nofollow">Report</a>}
