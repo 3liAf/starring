@@ -83,54 +83,38 @@ export function scan(repos, { emails, since, revealHosts = false, exclude = [], 
     }
     let out = '';
     try {
-      const format = coauthored
-        ? '%x1e%H%x1f%ae%x1f%aI%x1f%(trailers:key=Co-authored-by,valueonly)'
-        : '%H%x09%ae%x09%aI';
+      const format = '%x1e%H%x1f%ae%x1f%aI' + (coauthored ? '%x1f%(trailers:key=Co-authored-by,valueonly)' : '');
       out = git(repo, ['log', '--all', '--no-merges', `--format=${format}`, ...(since ? [`--since=${since}`] : [])]);
     } catch {
       onRepo?.(repo, 0, 'skipped (not readable)');
       continue;
     }
     let mine = 0;
-    if (coauthored) {
-      for (const record of out.split('\x1e')) {
-        if (!record.trim()) continue;
-        const [hash, email, date, trailerBlock] = record.split('\x1f');
-        if (!hash || seen.has(hash)) continue;
-        const isAuthor = wanted.has(email?.toLowerCase());
-        let isCoauthor = false;
-        if (!isAuthor && trailerBlock) {
-          for (const line of trailerBlock.split('\n')) {
-            const trimmed = line.trim();
-            if (!trimmed) continue;
-            const trailerEmail = (/<([^>]+)>/.exec(trimmed)?.[1] ?? trimmed).toLowerCase();
-            if (wanted.has(trailerEmail)) {
-              isCoauthor = true;
-              break;
-            }
+    for (const record of out.split('\x1e')) {
+      if (!record.trim()) continue;
+      const [hash, email, date, trailerBlock] = record.split('\x1f');
+      if (!hash || seen.has(hash)) continue;
+      const isAuthor = wanted.has(email?.toLowerCase());
+      let isCoauthor = false;
+      if (!isAuthor && coauthored && trailerBlock) {
+        for (const line of trailerBlock.split('\n')) {
+          const trimmed = line.trim();
+          if (!trimmed) continue;
+          const trailerEmail = (/<([^>]+)>/.exec(trimmed)?.[1] ?? trimmed).toLowerCase();
+          if (wanted.has(trailerEmail)) {
+            isCoauthor = true;
+            break;
           }
         }
-        if (!isAuthor && !isCoauthor) continue;
-        seen.add(hash);
-        mine++;
-        if (isAuthor) authored++; else coauthoredCount++;
-        const day = date.slice(0, 10);
-        const year = Number(day.slice(0, 4));
-        years.set(year, (years.get(year) ?? 0) + 1);
-        days.set(day, (days.get(day) ?? 0) + 1);
       }
-    } else {
-      for (const line of out.split('\n')) {
-        const [hash, email, date] = line.split('\t');
-        if (!hash || !wanted.has(email?.toLowerCase()) || seen.has(hash)) continue;
-        seen.add(hash);
-        mine++;
-        authored++;
-        const day = date.slice(0, 10);
-        const year = Number(day.slice(0, 4));
-        years.set(year, (years.get(year) ?? 0) + 1);
-        days.set(day, (days.get(day) ?? 0) + 1);
-      }
+      if (!isAuthor && !isCoauthor) continue;
+      seen.add(hash);
+      mine++;
+      if (isAuthor) authored++; else coauthoredCount++;
+      const day = date.slice(0, 10);
+      const year = Number(day.slice(0, 4));
+      years.set(year, (years.get(year) ?? 0) + 1);
+      days.set(day, (days.get(day) ?? 0) + 1);
     }
     if (mine) {
       counted++;
